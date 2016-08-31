@@ -9,18 +9,21 @@ define([
 var rclass = /[\t\r\n\f]/g;
 
 jQuery.fn.extend({
+
 	addClass: function( value ) {
 		var classes, elem, cur, clazz, j, finalValue,
 			proceed = typeof value === "string" && value,
 			i = 0,
 			len = this.length;
 
+        //如果value为function，则执行value后，调用addClass
 		if ( jQuery.isFunction( value ) ) {
 			return this.each(function( j ) {
 				jQuery( this ).addClass( value.call( this, j, this.className ) );
 			});
 		}
 
+        // value为string并且有值
 		if ( proceed ) {
 			// The disjunction here is for better compressibility (see removeClass)
 			classes = ( value || "" ).match( rnotwhite ) || [];
@@ -34,12 +37,14 @@ jQuery.fn.extend({
 
 				if ( cur ) {
 					j = 0;
+                    //循环将classes中的每一个，添加到cur中
 					while ( (clazz = classes[j++]) ) {
 						if ( cur.indexOf( " " + clazz + " " ) < 0 ) {
 							cur += clazz + " ";
 						}
 					}
 
+                    //先判断cur是否有变化，如果有才改变className，这样可以避免不必要的渲染
 					// only assign if different to avoid unneeded rendering.
 					finalValue = jQuery.trim( cur );
 					if ( elem.className !== finalValue ) {
@@ -95,13 +100,16 @@ jQuery.fn.extend({
 		return this;
 	},
 
+
 	toggleClass: function( value, stateVal ) {
 		var type = typeof value;
 
+        //如果stateVal有传值，并且是bool值，则根据stateVal来判断调用add还是remove
 		if ( typeof stateVal === "boolean" && type === "string" ) {
 			return stateVal ? this.addClass( value ) : this.removeClass( value );
 		}
 
+        //如果value是function，则循环调用
 		if ( jQuery.isFunction( value ) ) {
 			return this.each(function( i ) {
 				jQuery( this ).toggleClass( value.call(this, i, this.className, stateVal), stateVal );
@@ -116,6 +124,7 @@ jQuery.fn.extend({
 					self = jQuery( this ),
 					classNames = value.match( rnotwhite ) || [];
 
+                //遍历每一个className，在根据是否存在决定add还是remove
 				while ( (className = classNames[ i++ ]) ) {
 					// Check each className given, space separated list
 					if ( self.hasClass( className ) ) {
@@ -126,6 +135,7 @@ jQuery.fn.extend({
 				}
 
 			// Toggle whole class name
+            // 如果type值不存在获取type为bool值，则切换所有的className
 			} else if ( type === strundefined || type === "boolean" ) {
 				if ( this.className ) {
 					// store className if set
@@ -141,11 +151,13 @@ jQuery.fn.extend({
 		});
 	},
 
+    //判断是否存在Class
 	hasClass: function( selector ) {
 		var className = " " + selector + " ",
 			i = 0,
 			l = this.length;
 		for ( ; i < l; i++ ) {
+            //判断节点类型是否是元素，然后使用indexOf判断是否存在
 			if ( this[i].nodeType === 1 && (" " + this[i].className + " ").replace(rclass, " ").indexOf( className ) >= 0 ) {
 				return true;
 			}

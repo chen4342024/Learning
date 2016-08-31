@@ -24,6 +24,7 @@ function dataAttr( elem, key, data ) {
 
 	// If nothing was found internally, try to fetch any
 	// data from the HTML5 data-* attribute
+	//如果data为underfined，或者elem为元素，则，取得元素上data开头的数据
 	if ( data === undefined && elem.nodeType === 1 ) {
 		name = "data-" + key.replace( rmultiDash, "-$1" ).toLowerCase();
 		data = elem.getAttribute( name );
@@ -79,10 +80,12 @@ jQuery.fn.extend({
 			attrs = elem && elem.attributes;
 
 		// Gets all values
+        // 如果 data() , 则获取所有的值
 		if ( key === undefined ) {
 			if ( this.length ) {
 				data = data_user.get( elem );
 
+                //hasDataAttrs 为一个开关，只从DOM结构获取一次数据，一次过后就设置为true
 				if ( elem.nodeType === 1 && !data_priv.get( elem, "hasDataAttrs" ) ) {
 					i = attrs.length;
 					while ( i-- ) {
@@ -105,6 +108,7 @@ jQuery.fn.extend({
 		}
 
 		// Sets multiple values
+        // 处理key为对象的情况
 		if ( typeof key === "object" ) {
 			return this.each(function() {
 				data_user.set( this, key );

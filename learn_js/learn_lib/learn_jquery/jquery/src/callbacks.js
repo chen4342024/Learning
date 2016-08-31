@@ -46,11 +46,15 @@ jQuery.Callbacks = function( options ) {
 		jQuery.extend( {}, options );
 
 	var // Last fire value (for non-forgettable lists)
-		memory,
+		memory,// 最后一次触发回调时传的参数
+
 		// Flag to know if list was already fired
-		fired,
+		fired,// 列表中的函数是否已经回调至少一次
+
 		// Flag to know if list is currently firing
-		firing,
+
+		firing,// 列表中的函数是否正在回调中
+
 		// First callback to fire (used internally by add and fireWith)
 		firingStart,
 		// End of the loop when firing
