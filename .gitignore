@@ -1,1 +1,4 @@
 .idea
+/learn_js/learn_lib/learn_underscore/coverage
+/learn_js/learn_lib/learn_underscore/karma_html
+node_modules
