@@ -63,4 +63,21 @@ Animal.prototype.run = function () {
 };
 
 var dog = _.create(Animal.prototype, {color: "black"});
-console.log("dog -->%o",dog);
+console.log("dog -->%o", dog);
+
+
+function test() {
+    var a = {};
+    for (var i = 0; i < 100000; i++) {
+        a[i] = ("adf" + i);
+    }
+    a.length = 100000;
+
+    console.time("toArray");
+    _.toArray(a);
+    console.timeEnd("toArray");
+    console.time("slice");
+    Array.prototype.slice.call(a);
+    console.timeEnd("slice");
+
+}

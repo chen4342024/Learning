@@ -103,7 +103,7 @@
     };
 
     _.map = function (obj, iteratee, context) {
-        iteratee = optimizeCb(iteratee, context);
+        iteratee = cb(iteratee, context);
         var results = [];
         _.each(obj, function (value, key, obj) {
             results[key] = iteratee(value, key, obj);
@@ -214,9 +214,41 @@
         return obj.indexOf(item, fromIndex) >= 0;
     };
 
+    var getRestArgs = function (args, startIndex) {
+        var argsArr = ArrayProto.slice.call(args);
+        return argsArr.slice(startIndex);
+    };
+
+    _.invoke = function (obj, methodName) {
+        var args = getRestArgs(arguments, 2);
+        var isFunc = _.isFunction(methodName);
+        return _.map(obj, function (value, index, list) {
+            var func = isFunc ? methodName : value[methodName];
+            return func == null ? func : func.apply(value, args);
+        });
+    };
+
+
     // Array Functions
     // ------------------------
+    _.toArray = function (obj) {
+        if (!obj) return [];
+        if (_.isArray(obj)) return ArrayProto.slice.call(obj);
+        if (isArrayLike(obj)) return _.map(obj);
+        return _.values(obj);
+    };
 
+    _.isArray = nativeIsArray
+        || function (obj) {
+            return toString.call(obj) === '[object Array]';
+        };
+
+    // Predicate-generating functions. Often useful outside of Underscore.
+    _.constant = function (value) {
+        return function () {
+            return value;
+        };
+    };
 
     // Object Functions
     // -----------------------

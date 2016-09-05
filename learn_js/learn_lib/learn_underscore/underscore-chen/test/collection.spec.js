@@ -372,3 +372,23 @@ describe("contains", function () {
     })
 
 });
+
+describe('invoke', function () {
+    it('can correct handle', function () {
+        var result = _.invoke([[5, 1, 7], [3, 2, 1]], 'sort');
+        expect(result).toEqual([[1, 5, 7], [1, 2, 3]]);
+    });
+
+    it('called with arguments', function () {
+        _.invoke([{
+            method: function () {
+                expect(_.toArray(arguments)).toEqual([1, 2, 3]);
+            }
+        }], 'method', 1, 2, 3);
+    });
+
+    it('handles null & undefined', function () {
+        expect(_.invoke([{a: null}, {}, {a: _.constant(1)}], 'a')).toEqual([null, void 0, 1], '');
+    });
+
+});
