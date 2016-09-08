@@ -214,6 +214,8 @@
         return obj.indexOf(item, fromIndex) >= 0;
     };
 
+
+
     var getRestArgs = function (args, startIndex) {
         var argsArr = ArrayProto.slice.call(args);
         return argsArr.slice(startIndex);
@@ -237,11 +239,6 @@
         if (isArrayLike(obj)) return _.map(obj);
         return _.values(obj);
     };
-
-    _.isArray = nativeIsArray
-        || function (obj) {
-            return toString.call(obj) === '[object Array]';
-        };
 
     // Predicate-generating functions. Often useful outside of Underscore.
     _.constant = function (value) {
@@ -280,14 +277,47 @@
         return values;
     };
 
+    _.isElement = function (obj) {
+        return !!(obj && obj.nodeType === 1);
+    };
+
+    _.isArray = nativeIsArray
+        || function (obj) {
+            return toString.call(obj) === '[object Array]';
+        };
+
     _.isObject = function (obj) {
         var type = typeof obj;
         return type === "object" || type === 'function' && !!obj;
     };
 
+    _.each(["Arguments", 'Function', 'String', 'Number', 'Date', 'RegExp', 'Error', 'Symbol', 'Map', 'WeakMap', 'Set', 'WeakSet'], function (name) {
+        _["is" + name] = function (obj) {
+            return toString.call(obj) === '[object ' + name + ']';
+        }
+    });
+
+    _.isArguments = function (obj) {
+        return _.has(obj, 'callee');
+    };
+
     _.isFunction = function (obj) {
         return typeof obj == 'function';
     };
+
+    _.isNull = function (obj) {
+        return obj === null;
+    };
+
+    _.isUndefined = function (obj) {
+        return obj === void 0;
+    };
+
+    _.isFinite = function (obj) {
+        return isFinite(obj) && !isNaN(parseFloat(obj));
+    };
+
+    //isString isNumber isFinite  isBoolean  isDate isRegExp isError isNaN isNull isUndefined
 
     _.property = property;
 
