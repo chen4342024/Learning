@@ -11,10 +11,12 @@ var nodeHook, boolHook,
 	attrHandle = jQuery.expr.attrHandle;
 
 jQuery.fn.extend({
+	//设置/获取属性
 	attr: function( name, value ) {
 		return access( this, jQuery.attr, name, value, arguments.length > 1 );
 	},
 
+    //删除属性
 	removeAttr: function( name ) {
 		return this.each(function() {
 			jQuery.removeAttr( this, name );
@@ -23,6 +25,7 @@ jQuery.fn.extend({
 });
 
 jQuery.extend({
+    //设置/获取属性
 	attr: function( elem, name, value ) {
 		var hooks, ret,
 			nType = elem.nodeType;
@@ -71,21 +74,26 @@ jQuery.extend({
 		}
 	},
 
+    //删除属性
 	removeAttr: function( elem, value ) {
 		var name, propName,
 			i = 0,
-			attrNames = value && value.match( rnotwhite );
+			attrNames = value && value.match( rnotwhite );//正则表达式，按空格切分
 
 		if ( attrNames && elem.nodeType === 1 ) {
 			while ( (name = attrNames[i++]) ) {
+
+                //获取属性名，对某些属性名进行转换， 例如 class---> className
 				propName = jQuery.propFix[ name ] || name;
 
 				// Boolean attributes get special treatment (#10870)
+                // 布尔值的属性，特殊处理：重置属性为false
 				if ( jQuery.expr.match.bool.test( name ) ) {
 					// Set corresponding property to false
 					elem[ propName ] = false;
 				}
 
+                //删除属性
 				elem.removeAttribute( name );
 			}
 		}

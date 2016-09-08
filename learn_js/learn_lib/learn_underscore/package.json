@@ -1,0 +1,24 @@
+{
+  "name": "learn_underscore",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "gulp": "^3.9.1",
+    "gulp-jasmine": "^2.4.0",
+    "gulp-karma": "^0.0.5",
+    "karma-chrome-launcher": "^2.0.0",
+    "karma": "^1.2.0",
+    "karma-coverage": "^1.1.1",
+    "karma-jasmine": "^1.0.2",
+    "karma-jasmine-html-reporter": "^0.2.2"
+  },
+  "devDependencies": {
+    "karma-html-reporter": "^0.2.7"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
