@@ -214,7 +214,9 @@
         return obj.indexOf(item, fromIndex) >= 0;
     };
 
-
+    _.pluck = function (obj, key) {
+        return _.map(obj, _.property(key));
+    };
 
     var getRestArgs = function (args, startIndex) {
         var argsArr = ArrayProto.slice.call(args);
@@ -228,6 +230,19 @@
             var func = isFunc ? methodName : value[methodName];
             return func == null ? func : func.apply(value, args);
         });
+    };
+
+    _.max = function (list, iteratee, context) {
+        var result = -Infinity, lastComputed = -Infinity, computed;
+        iteratee = cb(iteratee, context);
+        _.each(list, function (value, index, list) {
+            computed = iteratee(value, index, list);
+            if (computed > lastComputed || computed === -Infinity && result === -Infinity) {
+                result = value;
+                lastComputed = computed;
+            }
+        });
+        return result;
     };
 
 
