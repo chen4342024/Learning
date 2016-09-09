@@ -232,19 +232,111 @@
         });
     };
 
-    _.max = function (list, iteratee, context) {
-        var result = -Infinity, lastComputed = -Infinity, computed;
-        iteratee = cb(iteratee, context);
-        _.each(list, function (value, index, list) {
-            computed = iteratee(value, index, list);
-            if (computed > lastComputed || computed === -Infinity && result === -Infinity) {
-                result = value;
-                lastComputed = computed;
+    _.max = function (obj, iteratee, context) {
+        var result = -Infinity, lastComputed = -Infinity, value, computed;
+        if (iteratee == null || (typeof iteratee == 'number' && typeof obj[0] != 'object') && obj != null) {
+            obj = isArrayLike(obj) ? obj : _.values(obj);
+            for (var i = 0, length = obj.length; i < length; i++) {
+                value = obj[i];
+                if (value != null && value > result) {
+                    result = value;
+                }
             }
-        });
+        } else {
+            iteratee = cb(iteratee, context);
+            _.each(obj, function (value, index, list) {
+                computed = iteratee(value, index, list);
+                if (computed > lastComputed || computed === -Infinity && result === -Infinity) {
+                    result = value;
+                    lastComputed = computed;
+                }
+            });
+        }
         return result;
     };
 
+    _.min = function (obj, iteratee, context) {
+        var result = Infinity, lastComputed = Infinity, value, computed;
+        if (iteratee == null || (typeof iteratee == 'number' && typeof obj[0] != 'object') && obj != null) {
+            obj = isArrayLike(obj) ? obj : _.values(obj);
+            for (var i = 0, length = obj.length; i < length; i++) {
+                value = obj[i];
+                if (value != null && value < result) {
+                    result = value;
+                }
+            }
+        } else {
+            iteratee = cb(iteratee, context);
+            _.each(obj, function (value, index, obj) {
+                computed = iteratee(value, index, obj);
+                if (computed < lastComputed || computed === Infinity && result === Infinity) {
+                    result = value;
+                    lastComputed = computed;
+                }
+            });
+        }
+        return result;
+    };
+
+
+    _.sortBy = function (obj, iteratee, context) {
+        var index = 0;
+        iteratee = cb(iteratee, context);
+        var objSortCriteria = _.map(obj, function (value, key, obj) {
+            return {
+                value: value,
+                index: index++,
+                criteria: iteratee(value, key, obj)
+            }
+        });
+        var sorted = objSortCriteria.sort(function (left, right) {
+            var a = left.criteria, b = right.criteria;
+            if (a !== b) {
+                if (a > b || a === void 0) return 1; // a === void 0 ,的时候，将void移到后面
+                if (a < b || b === void 0) return -1;
+            }
+            return left.index - right.index;
+        });
+        return _.pluck(sorted, 'value');
+    };
+
+    _.groupBy = group(function (result, value, key) {
+        if (!_.has(result, key)) {
+            result[key] = [];
+        }
+        result[key].push(value);
+    });
+
+
+    function group(behavior, partition) {
+        return function (obj, iteratee, context) {
+            iteratee = cb(iteratee, context);
+            var result = partition ? [[], []] : {};
+            _.each(obj, function (value, index, obj) {
+                var key = iteratee(value, index, obj);
+                behavior(result, value, key);
+            });
+            return result;
+        };
+    }
+
+
+    _.indexBy = group(function (result, value, key) {
+        result[key] = value;
+    });
+
+    _.countBy = group(function (result, value, key) {
+        if (_.has(result, key)) result[key]++; else result[key] = 1;
+    });
+
+    _.size = function (obj) {
+        if (!obj) return 0;
+        return isArrayLike(obj) ? obj.length : _.keys(obj).length;
+    };
+
+    _.partition = group(function (result, value, pass) {
+        result[pass ? 0 : 1].push(value);
+    }, true);
 
     // Array Functions
     // ------------------------
