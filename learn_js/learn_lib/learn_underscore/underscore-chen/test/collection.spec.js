@@ -665,7 +665,46 @@ describe('Collection ', function () {
         it('handles numbers', function () {
             expect(_.size(0)).toBe(0);
         });
-    })
+    });
+
+    describe('shuffle', function () {
+        it('behaves correctly on size 1 arrays', function () {
+            expect(_.shuffle([1]), [1]);
+        });
+
+        //it('does change the order', function () {
+        //    var numbers = _.range(20);
+        //    var shuffled = _.shuffle(numbers);
+        //    expect(numbers).not.toEqual(shuffled);
+        //});
+        //
+        //it('original object is unmodified', function () {
+        //    var numbers = _.range(20);
+        //    var shuffled = _.shuffle(numbers);
+        //    expect(numbers).not.toBe(shuffled);
+        //});
+
+        //it('contains the same members before and after shuffle', function () {
+        //    var numbers = _.range(20);
+        //    var shuffled = _.shuffle(numbers);
+        //    expect(numbers).toEqual(_.sortBy(shuffled));
+        //});
+
+        it('works on objects', function () {
+            var shuffled = _.shuffle({a: 1, b: 2, c: 3, d: 4});
+            expect(shuffled.sort()).toEqual([1, 2, 3, 4]);
+        });
+    });
+
+    describe('sample', function () {
+        it('behaves correctly on size 1 arrays', function () {
+            expect(_.sample([1]), [1]);
+        });
+
+        it('behaves correctly has n', function () {
+            expect(_.sample([1, 2, 3, 5]).length, 3);
+        });
+    });
 });
 
 

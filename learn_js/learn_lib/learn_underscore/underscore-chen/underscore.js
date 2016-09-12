@@ -15,6 +15,10 @@
         nativeKeys = Object.keys,
         nativeCreate = Object.create;
 
+    var toString = ObjectProto.toString,
+        slice = ArrayProto.slice,
+        push = ArrayProto.push;
+
     // common function
     // -------------------
 
@@ -320,7 +324,6 @@
         };
     }
 
-
     _.indexBy = group(function (result, value, key) {
         result[key] = value;
     });
@@ -338,13 +341,88 @@
         result[pass ? 0 : 1].push(value);
     }, true);
 
+    _.shuffle = function (obj) {
+        return _.sample(obj, Number.MAX_VALUE);
+    };
+
+    _.sample = function (obj, n) {
+        if (n == null) {
+            if (!isArrayLike(obj)) obj = _.values(obj);
+            return obj[_.random(0, obj.length - 1)];
+        }
+        //TODO  must be _.clone(obj)
+        var sample = isArrayLike(obj) ? obj : _.values(obj);
+        var length = getLength(sample);
+        n = Math.max(Math.min(n, length), 0);
+        var last = length - 1;
+        for (var i = 0; i < n; i++) {
+            var randomIndex = _.random(i, last);
+            var temp = obj[i];
+            obj[i] = obj[randomIndex];
+            obj[randomIndex] = temp;
+        }
+        return sample.slice(0, n);
+    };
+
+
     // Array Functions
     // ------------------------
+    _.first = function (array, n, guard) {
+        if (array == null) return void 0;
+        if (n == null || guard) return array[0];
+        return slice.call(array, 0, Math.max(0, n));
+    };
+
+    //guard 参数表示方法是否从_.map执行进入的
+    _.initial = function (array, n, guard) {
+        if (array == null) return void 0;
+        if (n == null || guard) n = 1;
+        return slice.call(array, 0, Math.max(0, array.length - n));
+    };
+
+    // Get the last element of an array. Passing **n** will return the last N
+    // values in the array.
+    _.last = function (array, n, guard) {
+        if (array == null) return void 0;
+        if (n == null || guard) return array[array.length - 1];
+        return _.rest(array, Math.max(0, array.length - n));
+    };
+
+    // Returns everything but the first entry of the array. Aliased as `tail` and `drop`.
+    // Especially useful on the arguments object. Passing an **n** will return
+    // the rest N values in the array.
+    _.rest = _.tail = _.drop = function (array, n, guard) {
+        return slice.call(array, n == null || guard ? 1 : n);
+    };
+
+    _.compact = function (array) {
+        return _.filter(array);
+    };
+
     _.toArray = function (obj) {
         if (!obj) return [];
         if (_.isArray(obj)) return ArrayProto.slice.call(obj);
         if (isArrayLike(obj)) return _.map(obj);
         return _.values(obj);
+    };
+
+    _.range = function (start, stop, step) {
+        if (stop == null) {
+            stop = start || 0;
+            start = 0;
+        }
+        if (!step) {
+            step = stop < start ? -1 : 1;
+        }
+
+        var length = Math.max(Math.ceil((stop - start) / step), 0);
+        var range = Array(length);
+
+        for (var idx = 0; idx < length; idx++, start += step) {
+            range[idx] = start;
+        }
+
+        return range;
     };
 
     // Predicate-generating functions. Often useful outside of Underscore.
@@ -382,6 +460,16 @@
             values[i] = (obj[keys[i]]);
         }
         return values;
+    };
+
+    // Create a (shallow-cloned) duplicate of an object.
+    _.clone = function (obj) {
+        if (!_.isObject(obj)) return obj;
+        return _.isArray(obj) ? obj.slice() : _.extend({}, obj);
+    };
+
+    _.extend = function (destination, source) {
+
     };
 
     _.isElement = function (obj) {
@@ -428,4 +516,26 @@
 
     _.property = property;
 
+
+    // Utility Function
+    // ----------------------
+    _.random = function (min, max) {
+        if (max == null) {
+            max = min;
+            min = 0;
+        }
+        return Math.floor(Math.random() * (max - min)) + min;
+    };
+
+    _.random = function (min, max) {
+        if (max == null) {
+            max = min;
+            min = 0;
+        }
+        return min + Math.floor(Math.random() * (max - min + 1));
+    };
 }());
+
+
+
+
