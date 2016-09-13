@@ -81,3 +81,40 @@ function test() {
     console.timeEnd("slice");
 
 }
+
+function test1() {
+    console.time("push");
+    var a = new Array();
+    for (var i = 0; i < 10000000; i++) {
+        a.push(i);
+    }
+    console.timeEnd("push");
+
+    console.time("length");
+    var bd1 = new Date().getTime();
+    var b = new Array();
+    var bi = 0;
+    for (var i = 0; i < 10000000; i++) {
+        b[b.length] = i;
+    }
+    ;
+    console.timeEnd("length");
+
+}
+
+function test2() {
+    console.time("length");
+    var b = new Array(10000000);
+    var len = 0;
+    for (var i = 0; i < 10000000; i++) {
+        b[len++] = i;
+    }
+    console.timeEnd("length");
+
+    console.time("push");
+    var a = new Array();
+    for (var i = 0; i < 10000000; i++) {
+        a.push(i);
+    }
+    console.timeEnd("push");
+}
