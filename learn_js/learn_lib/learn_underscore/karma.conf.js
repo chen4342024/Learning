@@ -1,6 +1,6 @@
 module.exports = function (config) {
     config.set({
-        browsers: ['Chrome'],
+        browsers: ['Chrome'],//,'IE'
         frameworks: ['jasmine'],
         files: [
             'underscore-chen/chen-underscore.js',

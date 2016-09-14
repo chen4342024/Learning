@@ -55,6 +55,9 @@
                     };
             }
         }
+        return function () {
+            return func.apply(context, arguments);
+        };
     };
 
     var cb = function (value, context, argCount) {
@@ -591,6 +594,15 @@
         return keys;
     };
 
+    _.allKeys = function (obj) {
+        if (!_.isObject(obj)) return [];
+        var keys = [];
+        for (var key in obj) keys.push(key);
+        // Ahem, IE < 9.
+        //if (hasEnumBug) collectNonEnumProps(obj, keys);
+        return keys;
+    };
+
     _.values = function (obj) {
         var keys = _.keys(obj);
         var length = keys.length;
@@ -599,6 +611,15 @@
             values[i] = (obj[keys[i]]);
         }
         return values;
+    };
+
+    _.functions = function (obj) {
+        var names = [];
+        var allKeys = _.allKeys(obj);
+        _.each(allKeys, function (key) {
+            if (_.isFunction(obj[key])) names.push(key);
+        });
+        return names.sort();
     };
 
     // Create a (shallow-cloned) duplicate of an object.
@@ -694,6 +715,28 @@
             min = 0;
         }
         return min + Math.floor(Math.random() * (max - min + 1));
+    };
+
+    _.mixin = function (obj) {
+        var functions = _.functions(obj);
+        _.each(functions, function (name) {
+            _[name] = obj[name];
+        });
+    };
+
+    _.iteratee = function (value, context) {
+        return cb(value, context, Infinity);
+    };
+
+
+    var idCounter = 0;
+    _.uniqueId = function (prefix) {
+        var id = ++idCounter + '';
+        return prefix ? prefix + id : id;
+    };
+
+    _.escape = function () {
+
     };
 }());
 

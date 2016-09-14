@@ -43,7 +43,6 @@ describe('utility', function () {
         it('can handle negate time ', function () {
             expect(_.times(-1, _.identity)).toEqual([]);
         });
-
     });
 
 
@@ -77,5 +76,38 @@ describe('utility', function () {
             });
             expect(result).toBe(true);
         });
-    })
+    });
+
+    describe('mixin', function () {
+        it('mixed in a function to _', function () {
+            _.mixin({
+                myReverse: function (string) {
+                    return string.split('').reverse().join('');
+                }
+            });
+            expect(_.myReverse('panacea')).toEqual('aecanap');
+        });
+    });
+
+    describe('iteratee', function () {
+        it('correct handle', function () {
+            var stooges = [{name: 'curly', age: 25}, {name: 'moe', age: 21}, {name: 'larry', age: 23}];
+            expect(_.map(stooges, _.iteratee('age'))).toEqual([25, 21, 23]);
+        });
+    });
+
+
+    describe('uniqueId', function () {
+        it('can generate a globally-unique stream of ids', function () {
+            var ids = [], i = 0;
+            while (i++ < 100) ids.push(_.uniqueId());
+            expect(_.uniq(ids).length).toBe(ids.length);
+        });
+    });
+
+    //describe('escape', function () {
+    //    it('can handle null', function () {
+    //        expect(_.escape(null)).toEqual('');
+    //    });
+    //});
 });
