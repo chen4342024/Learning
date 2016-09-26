@@ -79,5 +79,42 @@ function test() {
     console.time("slice");
     Array.prototype.slice.call(a);
     console.timeEnd("slice");
+}
+
+var array = _.range(10000000);
+function testArrayCopy() {
+    console.time("for copy");
+    var copyArray0 = Array(array.length);
+    for (var i = 0, len = array.length; i < len; i++) {
+        copyArray0[i] = array[i];
+    }
+    console.timeEnd("for copy");
+
+    console.time("for copy push");
+    var copyArray1 = [];
+    for (var i = 0, length = array.length; i < length; i++) {
+        copyArray1.push(array[i]);
+    }
+    console.timeEnd("for copy push");
+
+
+    console.time("slice");
+    var copyArray2 = Array.prototype.slice.call(array);
+    console.timeEnd("slice");
+
+    console.time("concat");
+    var copyArray3 = Array.prototype.concat.call(array);
+    console.timeEnd("concat");
 
 }
+
+function copyArray(array, dir) {
+    var copyArray = [];
+    var i = dir > 0 ? 0 : array.length - 1;
+
+    for (; i >= 0 && i < array.length; i += dir) {
+        copyArray.push(array[i]);
+    }
+    return copyArray;
+}
+

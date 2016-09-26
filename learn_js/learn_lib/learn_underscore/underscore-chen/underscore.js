@@ -303,7 +303,7 @@
 
     _.isObject = function (obj) {
         var type = typeof obj;
-        return type === "object" || type === 'function' && !!obj;
+        return type === "object" || type === 'function' && !!obj;//排除null
     };
 
     _.each(["Arguments", 'Function', 'String', 'Number', 'Date', 'RegExp', 'Error', 'Symbol', 'Map', 'WeakMap', 'Set', 'WeakSet'], function (name) {
