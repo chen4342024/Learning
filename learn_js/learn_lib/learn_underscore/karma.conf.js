@@ -1,9 +1,9 @@
 module.exports = function (config) {
     config.set({
-        browsers: ['Chrome'],
+        browsers: ['Chrome'],//,'IE'
         frameworks: ['jasmine'],
         files: [
-            'underscore-chen/underscore.js',
+            'underscore-chen/chen-underscore.js',
             'underscore-chen/test/**/*.spec.js'
         ],
         port: 9877,

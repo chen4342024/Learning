@@ -441,7 +441,270 @@ describe('Collection ', function () {
         it('return infinity if list is null', function () {
             var result = _.max(null);
             expect(result).toEqual(-Infinity);
+        });
+
+        it('String keys use property iterator', function () {
+            var result = _.max([{a: 1}, {a: 0, b: 3}, {a: 4}, {a: 2}], 'a');
+            expect(result).toEqual({a: 4});
+        });
+        it('Finds correct max in array starting with num and containing a false', function () {
+            var result = _.max([1, 2, 3, false]);
+            expect(result).toBe(3);
+        });
+
+        it('Finds correct max in array starting with a false', function () {
+            var result = _.max([false, 1, 2, 3]);
+            expect(result).toBe(3);
+        });
+
+        it('Maximum value of a non-numeric collection', function () {
+            expect(_.max({a: 'a'})).toBe(-Infinity);
+        })
+    });
+
+    describe('min', function () {
+        it('can return min value', function () {
+            var result = _.min([1, 2, 3, 4, 5]);
+            expect(result).toBe(1);
+        });
+
+        it('can return min value with context', function () {
+            var result = _.min([1, 2, 3, 4, 5], function (num) {
+                return num * this.key;
+            }, {key: -1});
+            expect(result).toBe(5);
+        });
+
+        it('can return min value by iteratee', function () {
+            var peoples = [
+                {name: 'chen1', age: 25},
+                {name: 'chen2', age: 26},
+                {name: 'chen3', age: 27}
+            ];
+            var result = _.min(peoples, function (people) {
+                return people.age;
+            });
+            expect(result).toEqual({name: 'chen1', age: 25});
+        });
+
+        it('return infinity if list is null', function () {
+            var result = _.min(null);
+            expect(result).toEqual(Infinity);
+        });
+
+        it('String keys use property iterator', function () {
+            var result = _.min([{a: 1}, {a: 0, b: 3}, {a: 4}, {a: 2}], 'a');
+            expect(result).toEqual({a: 0, b: 3});
+        });
+        it('Finds correct min in array starting with num and containing a null', function () {
+            var result = _.min([1, 2, 3, null]);
+            expect(result).toBe(1);
+        });
+
+        it('Finds correct min in array starting with a null', function () {
+            var result = _.min([null, 1, 2, 3]);
+            expect(result).toBe(1);
+        });
+
+        it('Maximum value of a non-numeric collection', function () {
+            expect(_.min({a: 'a'})).toBe(Infinity);
         })
 
     });
+
+
+    describe('sortBy', function () {
+
+        it('stooges sorted by age', function () {
+            var people = [{name: 'curly', age: 50}, {name: 'moe', age: 30}];
+            people = _.sortBy(people, function (person) {
+                return person.age;
+            });
+            expect(_.pluck(people, 'name')).toEqual(['moe', 'curly']);
+        });
+
+        it('sortBy with undefined values', function () {
+            var list = [void 0, 4, 1, void 0, 3, 2];
+            expect(_.sortBy(list, _.identity)).toEqual([1, 2, 3, 4, void 0, void 0]);
+        });
+
+        it('sorted by length', function () {
+            var list = ['one', 'two', 'three', 'four', 'five'];
+            var sorted = _.sortBy(list, 'length');
+            expect(sorted).toEqual(['one', 'two', 'four', 'five', 'three']);
+        });
+
+        function Pair(x, y) {
+            this.x = x;
+            this.y = y;
+        }
+
+        var stableArray = [
+            new Pair(1, 1), new Pair(1, 2),
+            new Pair(2, 1), new Pair(2, 2),
+            new Pair(2, 3), new Pair(2, 4),
+            new Pair(void 0, 1), new Pair(void 0, 2),
+            new Pair(void 0, 5), new Pair(void 0, 6)
+        ];
+
+        var actual = _.sortBy(stableArray, function (pair) {
+            return pair.x;
+        });
+
+        it('sortBy should be stable for arrays', function () {
+            expect(actual).toEqual(stableArray);
+        });
+
+    });
+
+    describe('groupBy', function () {
+        it('can group correct by iteratee', function () {
+            var result = _.groupBy([1.3, 2.1, 2.4], function (num) {
+                return Math.floor(num);
+            });
+            expect(result).toEqual({1: [1.3], 2: [2.1, 2.4]});
+        });
+
+        it('can group correct by key', function () {
+            var result = _.groupBy(['one', 'two', 'three'], 'length');
+            expect(result).toEqual({3: ["one", "two"], 5: ["three"]});
+
+            var matrix = [
+                [1, 2],
+                [1, 3],
+                [2, 3]
+            ];
+            expect(_.groupBy(matrix, 0)).toEqual({1: [[1, 2], [1, 3]], 2: [[2, 3]]});
+            expect(_.groupBy(matrix, 1)).toEqual({2: [[1, 2]], 3: [[1, 3], [2, 3]]});
+        });
+    });
+    describe('indexBy', function () {
+        it('can correct handle ', function () {
+            var parity = _.indexBy([1, 2, 3, 4, 5], function (num) {
+                return num % 2 === 0;
+            });
+            expect(parity['true']).toEqual(4);
+            expect(parity['false']).toEqual(5);
+        });
+
+        it('can just retain one value', function () {
+            var list = ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'];
+            var grouped = _.indexBy(list, 'length');
+            expect(grouped['3']).toEqual('ten');
+            expect(grouped['4']).toEqual('nine');
+            expect(grouped['5']).toEqual('eight');
+        });
+
+        it('can handle without iteratee', function () {
+            var array = [1, 2, 1, 2, 3];
+            grouped = _.indexBy(array);
+            expect(grouped['1']).toEqual(1);
+            expect(grouped['2']).toEqual(2);
+            expect(grouped['3']).toEqual(3);
+        });
+    });
+
+    describe('countBy', function () {
+        it('can correct handle ', function () {
+            var parity = _.countBy([1, 2, 3, 4, 5], function (num) {
+                return num % 2 === 0;
+            });
+            expect(parity['true']).toBe(2);
+            expect(parity['false']).toBe(3);
+        });
+
+        it('can just retain one value', function () {
+            var list = ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'];
+            var grouped = _.countBy(list, 'length');
+            expect(grouped['3']).toBe(4);
+            expect(grouped['4']).toBe(3);
+            expect(grouped['5']).toBe(3);
+        });
+
+        it('can handle without iteratee', function () {
+            var array = [1, 2, 1, 2, 3];
+            grouped = _.countBy(array);
+            expect(grouped['1']).toBe(2);
+            expect(grouped['2']).toBe(2);
+            expect(grouped['3']).toBe(1);
+        });
+    });
+
+    describe('partition', function () {
+        it('can correct handle ', function () {
+            var result = _.partition([0, 1, 2, 3, 4, 5], function (num) {
+                return num % 2 === 0;
+            });
+            expect(result).toEqual([[0, 2, 4], [1, 3, 5]]);
+        });
+        it('can handle without iteratee', function () {
+            var result = _.partition([0, 1, 2, 3, 4, 5]);
+            expect(result).toEqual([[1, 2, 3, 4, 5], [0]]);
+        });
+    });
+
+    describe('size', function () {
+        it('can compute the size of an object', function () {
+            expect(_.size({one: 1, two: 2, three: 3})).toBe(3);
+        });
+        it('can compute the size of an array', function () {
+            expect(_.size([1, 2, 3])).toBe(3);
+        });
+        it('can compute the size of Array-likes', function () {
+            expect(_.size({length: 3, 0: 0, 1: 0, 2: 0})).toBe(3);
+        });
+        it('can compute the size of a string literal', function () {
+            expect(_.size('hello')).toBe(5);
+        });
+        it('can compute the size of string object', function () {
+            expect(_.size(new String('hello'))).toBe(5);
+        });
+        it('handles nulls', function () {
+            expect(_.size(null)).toBe(0);
+        });
+        it('handles numbers', function () {
+            expect(_.size(0)).toBe(0);
+        });
+    });
+
+    describe('shuffle', function () {
+        it('behaves correctly on size 1 arrays', function () {
+            expect(_.shuffle([1]), [1]);
+        });
+
+        //it('does change the order', function () {
+        //    var numbers = _.range(20);
+        //    var shuffled = _.shuffle(numbers);
+        //    expect(numbers).not.toEqual(shuffled);
+        //});
+        //
+        //it('original object is unmodified', function () {
+        //    var numbers = _.range(20);
+        //    var shuffled = _.shuffle(numbers);
+        //    expect(numbers).not.toBe(shuffled);
+        //});
+
+        //it('contains the same members before and after shuffle', function () {
+        //    var numbers = _.range(20);
+        //    var shuffled = _.shuffle(numbers);
+        //    expect(numbers).toEqual(_.sortBy(shuffled));
+        //});
+
+        it('works on objects', function () {
+            var shuffled = _.shuffle({a: 1, b: 2, c: 3, d: 4});
+            expect(shuffled.sort()).toEqual([1, 2, 3, 4]);
+        });
+    });
+
+    describe('sample', function () {
+        it('behaves correctly on size 1 arrays', function () {
+            expect(_.sample([1]), [1]);
+        });
+
+        it('behaves correctly has n', function () {
+            expect(_.sample([1, 2, 3, 5]).length, 3);
+        });
+    });
 });
+
+

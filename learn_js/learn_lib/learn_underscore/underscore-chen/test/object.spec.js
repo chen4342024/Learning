@@ -1,5 +1,129 @@
 describe('Object', function () {
 
+    describe('functions', function () {
+        it('can grab the function names of any passed-in object', function () {
+            var obj = {a: 'dash', b: _.map, c: /yo/, d: _.reduce};
+            expect(['b', 'd']).toEqual(_.functions(obj));
+        });
+
+        it('also looks up functions on the prototype', function () {
+            var Animal = function () {
+            };
+            Animal.prototype.run = function () {
+            };
+            expect(_.functions(new Animal)).toEqual(['run']);
+        });
+    });
+
+    describe('keys', function () {
+        it('can extract the keys from an object', function () {
+            expect(_.keys({one: 1, two: 2})).toEqual(['one', 'two']);
+        });
+
+        it('is not fooled by sparse arrays; see issue #95', function () {
+            var a = [];
+            a[1] = 0;
+            expect(_.keys(a)).toEqual(['1']);
+        });
+
+
+        it('can handle null / void 0 / number / string / boolean', function () {
+            expect(_.keys(null)).toEqual([]);
+            expect(_.keys(void 0)).toEqual([]);
+            expect(_.keys(1)).toEqual([]);
+            expect(_.keys('a')).toEqual([]);
+            expect(_.keys(true)).toEqual([]);
+        });
+
+
+        // keys that may be missed if the implementation isn't careful
+        it('matches non-enumerable properties', function () {
+            var trouble = {
+                constructor: Object,
+                valueOf: _.noop,
+                hasOwnProperty: null,
+                toString: 5,
+                toLocaleString: void 0,
+                propertyIsEnumerable: /a/,
+                isPrototypeOf: this,
+                __defineGetter__: Boolean,
+                __defineSetter__: {},
+                __lookupSetter__: false,
+                __lookupGetter__: []
+            };
+            var troubleKeys = ['constructor', 'valueOf', 'hasOwnProperty', 'toString', 'toLocaleString', 'propertyIsEnumerable',
+                'isPrototypeOf', '__defineGetter__', '__defineSetter__', '__lookupSetter__', '__lookupGetter__'].sort();
+            expect(_.keys(trouble).sort()).toEqual(troubleKeys);
+        });
+
+    });
+
+    describe('allKeys', function () {
+
+        it('can extract the allKeys from an object', function () {
+            expect(_.allKeys({one: 1, two: 2})).toEqual(['one', 'two']);
+        });
+
+        // the test above is not safe because it relies on for-in enumeration order
+
+        it('is not fooled by sparse arrays; see issue #95', function () {
+            var a = [];
+            a[1] = 0;
+            expect(_.allKeys(a)).toEqual(['1']);
+        });
+
+
+        it('is not fooled by sparse arrays with additional properties', function () {
+            var a = [];
+            a[1] = 0;
+            a.a = a;
+            expect(_.allKeys(a)).toEqual(['1', 'a']);
+        });
+
+        it('can handle negate value ', function () {
+            _.each([null, void 0, 1, 'a', true, NaN, {}, [], new Number(5), new Date(0)], function (val) {
+                expect(_.allKeys(val)).toEqual([]);
+            });
+        });
+
+
+        // allKeys that may be missed if the implementation isn't careful
+        it('matches non-enumerable properties', function () {
+            var trouble = {
+                constructor: Object,
+                valueOf: _.noop,
+                hasOwnProperty: null,
+                toString: 5,
+                toLocaleString: void 0,
+                propertyIsEnumerable: /a/,
+                isPrototypeOf: this
+            };
+            var troubleKeys = ['constructor', 'valueOf', 'hasOwnProperty', 'toString', 'toLocaleString', 'propertyIsEnumerable',
+                'isPrototypeOf'].sort();
+            expect(_.allKeys(trouble).sort()).toEqual(troubleKeys);
+        });
+
+
+        it('should include inherited keys', function () {
+            function A() {
+            }
+
+            A.prototype.foo = 'foo';
+            var b = new A();
+            b.bar = 'bar';
+            expect(_.allKeys(b).sort()).toEqual(['bar', 'foo']);
+        });
+
+        it('should get keys from constructor', function () {
+            function y() {
+            }
+
+            y.x = 'z';
+            expect(_.allKeys(y)).toEqual(['x']);
+        });
+
+    });
+
 
     var testElement = typeof document === 'object' ? document.createElement('div') : void 0;
     describe('isElement', function () {
@@ -74,6 +198,7 @@ describe('Object', function () {
             expect(result).toBe(false);
         });
     });
+
 
     describe('isNumber', function () {
         it("a string is not a number", function () {
