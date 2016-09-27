@@ -316,7 +316,7 @@
         var sorted = objSortCriteria.sort(function (left, right) {
             var a = left.criteria, b = right.criteria;
             if (a !== b) {
-                if (a > b || a === void 0) return 1; // a === void 0 ,的时候，将void移到后面
+                if (a > b || a === void 0) return 1; // a === void 0 ,的时候，将void 0 移到后面
                 if (a < b || b === void 0) return -1;
             }
             return left.index - right.index;
@@ -573,6 +573,14 @@
         return range;
     };
 
+    // Function Functions
+    //--------------------------
+    _.bind = restArgs(function (func, obj, args) {
+        var bound = restArgs(function (callArgs) {
+            return func.apply(obj, args.concat(callArgs));
+        });
+        return bound;
+    });
 
     // Object Functions
     // -----------------------
@@ -735,9 +743,39 @@
         return prefix ? prefix + id : id;
     };
 
-    _.escape = function () {
-
+    // List of HTML entities for escaping.
+    var escapeMap = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#x27;',
+        '`': '&#x60;'
     };
+    var unescapeMap = _.invert(escapeMap);
+
+    // Functions for escaping and unescaping strings to/from HTML interpolation.
+    var createEscaper = function (map) {
+        var escaper = function (match) {
+            return map[match];
+        };
+        // Regexes for identifying a key that needs to be escaped.
+        var source = '(?:' + _.keys(map).join('|') + ')';
+        var testRegexp = RegExp(source);
+        var replaceRegexp = RegExp(source, 'g');
+        return function (string) {
+            string = string == null ? '' : '' + string;
+            return testRegexp.test(string) ? string.replace(replaceRegexp, escaper) : string;
+        };
+    };
+    _.escape = createEscaper(escapeMap);
+    _.unescape = createEscaper(unescapeMap);
+
+
+    _.now = Date.now || function () {
+            return new Date().getTime();
+        };
+
 }());
 
 
