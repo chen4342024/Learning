@@ -17,6 +17,10 @@
         nativeKeys = Object.keys,
         nativeCreate = Object.create;
 
+    // Naked function reference for surrogate-prototype-swapping.
+    var Ctor = function () {
+    };
+
     var toString = ObjectProto.toString,
         slice = ArrayProto.slice,
         push = ArrayProto.push;
@@ -65,6 +69,41 @@
         if (_.isFunction(value)) return optimizeCb(value, context, argCount);
         if (_.isObject(value)) return _.matcher(value);
         return _.property(value);
+    };
+
+    var restArgs = function (func, startIndex) {
+        startIndex = startIndex == null ? func.length - 1 : startIndex;
+        return function () {
+            var length = Math.max(arguments.length - startIndex, 0);
+            var rest = Array(length);
+            for (var index = 0; index < length; index++) {
+                rest[index] = arguments[index + startIndex];
+            }
+            switch (startIndex) {
+                case 0:
+                    return func.call(this, rest); //使用call 性能比 apply更好点
+                case 1:
+                    return func.call(this, arguments[0], rest);
+                case 2:
+                    return func.call(this, arguments[0], arguments[1], rest);
+            }
+            var args = Array(startIndex + 1);
+            for (index = 0; index < startIndex; index++) {
+                args[index] = arguments[index];
+            }
+            args[startIndex] = rest;
+            return func.apply(this, args);
+        }
+    };
+
+    // An internal function for creating a new object that inherits from another.
+    var baseCreate = function (prototype) {
+        if (!_.isObject(prototype)) return {};
+        if (nativeCreate) return nativeCreate(prototype);
+        Ctor.prototype = prototype;
+        var result = new Ctor;
+        Ctor.prototype = null;
+        return result;
     };
 
 
@@ -219,32 +258,6 @@
 
     _.pluck = function (obj, key) {
         return _.map(obj, _.property(key));
-    };
-
-
-    var restArgs = function (func, startIndex) {
-        startIndex = startIndex == null ? func.length - 1 : startIndex;
-        return function () {
-            var length = Math.max(arguments.length - startIndex, 0);
-            var rest = Array(length);
-            for (var index = 0; index < length; index++) {
-                rest[index] = arguments[index + startIndex];
-            }
-            switch (startIndex) {
-                case 0:
-                    return func.call(this, rest); //使用call 性能比 apply更好点
-                case 1:
-                    return func.call(this, arguments[0], rest);
-                case 2:
-                    return func.call(this, arguments[0], arguments[1], rest);
-            }
-            var args = Array(startIndex + 1);
-            for (index = 0; index < startIndex; index++) {
-                args[index] = arguments[index];
-            }
-            args[startIndex] = rest;
-            return func.apply(this, args);
-        }
     };
 
 
@@ -577,10 +590,39 @@
     //--------------------------
     _.bind = restArgs(function (func, obj, args) {
         var bound = restArgs(function (callArgs) {
-            return func.apply(obj, args.concat(callArgs));
+            return excuteBound(func, bound, obj, this, args.concat(callArgs));
         });
         return bound;
     });
+
+    /**
+     * 执行绑定的方法
+     * @param sourceFunc
+     * @param boundFunc
+     * @param context
+     * @param callingContext
+     * @param args
+     * @returns {*}
+     */
+    var excuteBound = function (sourceFunc, boundFunc, context, callingContext, args) {
+        //普通使用bound方法的情况
+        if (!(callingContext instanceof boundFunc)) {
+            return sourceFunc.apply(context, args);
+        }
+        var self = new sourceFunc(args);
+        return self;
+    };
+
+    _.bindAll = restArgs(function (obj, keys) {
+        keys = flatten(keys, false, false);
+        var index = keys.length;
+        if (index < 1) throw new Error('bindAll must be passed function names');
+        while (index--) {
+            var key = keys[index];
+            obj[key] = _.bind(obj[key], obj);
+        }
+    });
+
 
     // Object Functions
     // -----------------------
@@ -775,7 +817,7 @@
         var replaceRegexp = new RegExp(source, 'g');
         return function (string) {
             string = string == null ? '' : '' + string;
-            return testRegexp.test(string) ? string.replace(replaceRegexp,function (match) {
+            return testRegexp.test(string) ? string.replace(replaceRegexp, function (match) {
                 return map[match];
             }) : string;
         }
