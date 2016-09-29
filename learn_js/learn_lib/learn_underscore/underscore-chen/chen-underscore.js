@@ -613,6 +613,16 @@
         return values;
     };
 
+    // Invert the keys and values of an object. The values must be serializable.
+    _.invert = function (obj) {
+        var result = {};
+        var keys = _.keys(obj);
+        for (var i = 0, length = keys.length; i < length; i++) {
+            result[obj[keys[i]]] = keys[i];
+        }
+        return result;
+    };
+
     _.functions = function (obj) {
         var names = [];
         var allKeys = _.allKeys(obj);
@@ -717,6 +727,11 @@
         return min + Math.floor(Math.random() * (max - min + 1));
     };
 
+    // A (possibly faster) way to get the current timestamp as an integer.
+    _.now = Date.now || function () {
+            return new Date().getTime();
+        };
+
     _.mixin = function (obj) {
         var functions = _.functions(obj);
         _.each(functions, function (name) {
@@ -735,9 +750,31 @@
         return prefix ? prefix + id : id;
     };
 
-    _.escape = function () {
-
+    // List of HTML entities for escaping.
+    var escapeMap = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#x27;',
+        '`': '&#x60;'
     };
+    var unescapeMap = _.invert(escapeMap);
+
+    var createEscape = function (map) {
+        var source = '(?:' + _.keys(map).join('|') + ')';
+        var testRegexp = new RegExp(source);
+        var replaceRegexp = new RegExp(source, 'g');
+        return function (string) {
+            string = string == null ? '' : '' + string;
+            return testRegexp.test(string) ? string.replace(replaceRegexp,function (match) {
+                return map[match];
+            }) : string;
+        }
+    };
+
+    _.escape = createEscape(escapeMap);
+    _.unescape = createEscape(unescapeMap);
 }());
 
 

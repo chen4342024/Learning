@@ -65,6 +65,7 @@ Animal.prototype.run = function () {
 var dog = _.create(Animal.prototype, {color: "black"});
 console.log("dog -->%o", dog);
 
+for(var key in dog){console.log(key)}
 
 function test() {
     var a = {};

@@ -105,9 +105,31 @@ describe('utility', function () {
         });
     });
 
-    //describe('escape', function () {
-    //    it('can handle null', function () {
-    //        expect(_.escape(null)).toEqual('');
-    //    });
-    //});
+    describe('escape', function () {
+        it('can handle null', function () {
+            expect(_.escape(null)).toEqual('');
+        });
+    });
+
+    describe('now', function () {
+        it('Produces the correct time in milliseconds',function () {
+            var diff = _.now() - new Date().getTime();
+            expect(diff <= 0 && diff > -5).toBe(true);
+        });
+    });
+
+    describe('escape', function () {
+        it('don\'t unescape unnecessarily', function () {
+            var string = 'Curly & Moe';
+            expect(_.unescape(_.escape(string))).toEqual(string);
+            expect(_.unescape(string)).toEqual(string);
+        });
+
+        it('can handles & aka &amp;', function () {
+            var str = 'some string & another string & yet another';
+            var escaped = _.escape(str);
+            expect(escaped.indexOf('&amp') !== -1).toBe(true);
+            expect(_.unescape(str)).toEqual(str);
+        });
+    });
 });
