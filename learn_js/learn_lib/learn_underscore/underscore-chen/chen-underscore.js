@@ -316,7 +316,7 @@
         var sorted = objSortCriteria.sort(function (left, right) {
             var a = left.criteria, b = right.criteria;
             if (a !== b) {
-                if (a > b || a === void 0) return 1; // a === void 0 ,的时候，将void移到后面
+                if (a > b || a === void 0) return 1; // a === void 0 ,的时候，将void 0 移到后面
                 if (a < b || b === void 0) return -1;
             }
             return left.index - right.index;
@@ -573,6 +573,14 @@
         return range;
     };
 
+    // Function Functions
+    //--------------------------
+    _.bind = restArgs(function (func, obj, args) {
+        var bound = restArgs(function (callArgs) {
+            return func.apply(obj, args.concat(callArgs));
+        });
+        return bound;
+    });
 
     // Object Functions
     // -----------------------
@@ -775,6 +783,10 @@
 
     _.escape = createEscape(escapeMap);
     _.unescape = createEscape(unescapeMap);
+    _.now = Date.now || function () {
+            return new Date().getTime();
+        };
+
 }());
 
 

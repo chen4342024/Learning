@@ -80,42 +80,42 @@ function test() {
     console.time("slice");
     Array.prototype.slice.call(a);
     console.timeEnd("slice");
+}
+
+var array = _.range(10000000);
+function testArrayCopy() {
+    console.time("for copy");
+    var copyArray0 = Array(array.length);
+    for (var i = 0, len = array.length; i < len; i++) {
+        copyArray0[i] = array[i];
+    }
+    console.timeEnd("for copy");
+
+    console.time("for copy push");
+    var copyArray1 = [];
+    for (var i = 0, length = array.length; i < length; i++) {
+        copyArray1.push(array[i]);
+    }
+    console.timeEnd("for copy push");
+
+
+    console.time("slice");
+    var copyArray2 = Array.prototype.slice.call(array);
+    console.timeEnd("slice");
+
+    console.time("concat");
+    var copyArray3 = Array.prototype.concat.call(array);
+    console.timeEnd("concat");
 
 }
 
-function test1() {
-    console.time("push");
-    var a = new Array();
-    for (var i = 0; i < 10000000; i++) {
-        a.push(i);
-    }
-    console.timeEnd("push");
+function copyArray(array, dir) {
+    var copyArray = [];
+    var i = dir > 0 ? 0 : array.length - 1;
 
-    console.time("length");
-    var bd1 = new Date().getTime();
-    var b = new Array();
-    var bi = 0;
-    for (var i = 0; i < 10000000; i++) {
-        b[b.length] = i;
+    for (; i >= 0 && i < array.length; i += dir) {
+        copyArray.push(array[i]);
     }
-    ;
-    console.timeEnd("length");
-
+    return copyArray;
 }
 
-function test2() {
-    console.time("length");
-    var b = new Array(10000000);
-    var len = 0;
-    for (var i = 0; i < 10000000; i++) {
-        b[len++] = i;
-    }
-    console.timeEnd("length");
-
-    console.time("push");
-    var a = new Array();
-    for (var i = 0; i < 10000000; i++) {
-        a.push(i);
-    }
-    console.timeEnd("push");
-}
