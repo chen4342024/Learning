@@ -1,0 +1,55 @@
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+.holy-grail {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+
+}
+
+.header {
+    flex: 0 0 60px;
+    background-color: #333333;
+    color: #fff;
+}
+
+.main {
+    flex: 1;
+    background-color: burlywood;
+    display: flex;
+}
+
+.main .left {
+    background-color: #77BBDD;
+    flex: 0 0 20%;
+}
+
+.main .center {
+    background-color: #D6D6D6;
+    flex: 1;
+}
+
+.main .right {
+    background-color: #FF6633;
+    flex: 0 0 20%;
+}
+
+.footer {
+    color: #fff;
+    flex: 0 0 60px;
+    background-color: #333333;
+}
+
+@media (max-width: 768px) {
+    .main {
+        flex: 1;
+        flex-direction: column;
+    }
+
+    .main .left, .main .center, .main .right {
+        flex: 1 1 auto;
+    }
+}

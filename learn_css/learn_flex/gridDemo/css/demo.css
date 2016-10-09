@@ -1,0 +1,32 @@
+.grid-box {
+    padding: 15px;
+    margin: 20px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.grid {
+    display: flex;
+}
+
+.grid-cell {
+    background-color: #F4F3F0;
+    height: 60px;
+    border-radius: 5px;
+    margin: 5px 10px;
+    flex: 1;
+    text-align: center;
+    line-height: 60px;
+}
+
+.u1-4 {
+    flex: 0 0 25%;
+}
+
+.u1-3 {
+    flex: 0 0 33.3333%;
+}
+
+.u1-2 {
+    flex: 0 0 50%;
+}
