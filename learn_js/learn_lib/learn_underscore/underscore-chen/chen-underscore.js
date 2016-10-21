@@ -623,6 +623,33 @@
         }
     });
 
+    _.partial.placeholder = _;
+    _.partial = restArgs(function (func, boundArgs) {
+        var placeholder = _.partial.placeholder;
+        var bound = function () {
+            var position = 0, len = boundArgs.length;
+            var args = [];
+            for (var i = 0; i < len; i++) {
+                args.push(boundArgs === placeholder ? arguments[position++] : boundArgs[i]);
+            }
+            var argumentLength = arguments.length;
+            while (position < argumentLength){
+                args.push(arguments[position++]);
+            };
+
+            return excuteBound(func, bound, this, this, args);
+        };
+        return bound;
+    });
+
+    _.delay = restArgs(function (func, wait, args) {
+        return setTimeout(function () {
+            return func.apply(null, args);
+        }, wait);
+    });
+
+    _.defer = _.partial(_.delay, _, 1);
+
 
     // Object Functions
     // -----------------------

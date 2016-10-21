@@ -68,6 +68,27 @@ describe('Functions Function ', function () {
                 _.bindAll(curly);
             }).toThrowError(Error);
         });
+    });
 
+    describe('partial', function () {
+        var func = function () {
+            return _.toArray(arguments).join(' ');
+        };
+        it('can partial correct', function () {
+            var func1 = _.partial(func, 'a', 'b');
+            expected(func1()).toEqual('ab');
+        });
+        it('can partial correct with placeholder', function () {
+            var func1 = _.partial(func, 'a', _, _, 'd');
+            expected(func1('b','c')).toEqual('abcd');
+        });
+        it('accepts more arguments than the number of placeholders', function () {
+            var func1 = _.partial(func, 'a', _, _, 'd');
+            expected(func1('b','c','e')).toEqual('abcde');
+        });
+        it('accepts fewer arguments than the number of placeholders and unfilled value is undefined', function () {
+            var func1 = _.partial(func, 'a', _, _, 'd');
+            expected(func1('b')).toEqual('abundefinedd');
+        });
     })
 });
