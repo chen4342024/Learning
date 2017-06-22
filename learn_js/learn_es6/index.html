@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="renderer" content="webkit">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>React Components</title>
+    <script>
+        function setRem() {
+            width = docEl.getBoundingClientRect().width, width !== preWidth && (preWidth = width, rem = width / designWidth, rem *= 100, docEl.style.fontSize = rem + "px")
+        }
+        function changeRem() {
+            setRem()
+        }
+        var docEl = document.documentElement, designWidth = docEl.getAttribute("data-design-width") || 750, rem, width, preWidth, timer;
+        window.addEventListener("resize", function () {
+            clearTimeout(timer), timer = setTimeout(changeRem, 300)
+        }), window.addEventListener("orientationchange", function () {
+            clearTimeout(timer), timer = setTimeout(changeRem, 300)
+        }), setRem();
+    </script>
+</head>
+<body>
+<div class="btn-list">
+    <button class="J-test-var">测试 var</button>
+    <button class="J-test-let">测试 Let</button>
+    <button class="J-test4">测试默认参数</button>
+    <button class="J-test4-2">默认参数和解构一起用</button>
+    <button class="J-test4-3">强制某参数必填</button>
+    <button class="J-test5">不定参数</button>
+    <button class="J-test5-1">...拼接</button>
+    <button class="J-test5-2">...拼接，例子：求最大值</button>
+    <button class="J-test5-3">合并两个数组</button>
+    <button class="J-test5-4">解构对象时使用...</button>
+    <button class="J-test5-5">合并对象</button>
+    <button class="J-test5-6">合并两个对象</button>
+    <button class="J-test6-1">模板字符串</button>
+    <button class="J-test6-2">多行模板字符串</button>
+    <button class="J-test7-1">数组解构赋值</button>
+    <button class="J-test7-2">对象解构赋值</button>
+    <button class="J-test7-3">字符串解构赋值</button>
+    <button class="J-test7-4">函数解构赋值</button>
+    <button class="J-test8-1">箭头函数使用</button>
+    <button class="J-test8-3">箭头函数绑定this</button>
+    <button class="J-test9-1">Promise简单使用</button>
+    <button class="J-test9-2">Generator简单使用</button>
+    <button class="J-test9-3">Generator next 带参数</button>
+    <button class="J-test9-4">Generator next 带参数 观察yield的值</button>
+    <button class="J-test9-5">Generator 异步任务封装</button>
+    <button class="J-test9-6">Generator 执行器</button>
+    <button class="J-test10-1">async 简单例子</button>
+    <button class="J-test10-2">async 返回promise</button>
+    <button class="J-test10-3">await 后面非promise对象的处理</button>
+    <button class="J-test10-4">await 顺序执行例子</button>
+    <button class="J-test11-1">测试import export</button>
+    <button class="J-test11-2">测试import export default</button>
+    <button class="J-test11-3">测试import *</button>
+</div>
+
+</body>
+</html>

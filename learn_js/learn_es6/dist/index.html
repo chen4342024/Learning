@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" >
+    <meta name="renderer" content="webkit">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>React Components</title>
+    <script>
+      function setRem(){width=docEl.getBoundingClientRect().width,width!==preWidth&&(preWidth=width,rem=width/designWidth,rem*=100,docEl.style.fontSize=rem+"px")}function changeRem(){setRem()}var docEl=document.documentElement,designWidth=docEl.getAttribute("data-design-width")||750,rem,width,preWidth,timer;window.addEventListener("resize",function(){clearTimeout(timer),timer=setTimeout(changeRem,300)}),window.addEventListener("orientationchange",function(){clearTimeout(timer),timer=setTimeout(changeRem,300)}),setRem();
+    </script>
+</head>
+<body>
+<script type="text/javascript" src="bundle.js"></script></body>
+</html>
