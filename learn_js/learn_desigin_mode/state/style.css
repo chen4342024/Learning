@@ -1,0 +1,11 @@
+.btn.disable {
+    background: #ccc;
+}
+
+.btn {
+    background: #508ef0;
+    color: #fff;
+    padding: 4px 10px;
+    display: inline-block;
+    border: none;
+}

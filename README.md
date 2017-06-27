@@ -10,3 +10,4 @@
 - - learn_professional_js 高级程序设计学习笔记
 - - learn_react  学习react
 - - learn_vuejs  学习vuejs
+- - learn_desigin_mode 学习设计模式
