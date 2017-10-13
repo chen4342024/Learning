@@ -9,6 +9,15 @@ function returnValue(value) {
 }
 
 
+function resolveValue(newValue, resolve, reject) {
+	if (newValue instanceof PromiseA) {
+		newValue.then(resolve, reject);
+	} else {
+		resolve(newValue);
+	}
+}
+
+
 class PromiseA {
 	constructor(executor) {
 		this.status = STATUS.PENDING;
@@ -24,6 +33,7 @@ class PromiseA {
 	resolve(value) {
 		if (this.status === STATUS.PENDING) {
 			this.status = STATUS.FULFILLED;
+			this.resultValue = value;
 			this.fulfilledCallback(value);
 		}
 	}
@@ -31,16 +41,37 @@ class PromiseA {
 	reject(error) {
 		if (this.status === STATUS.PENDING) {
 			this.status = STATUS.REJECTED;
+			this.resultValue = error;
 			this.rejectedCallback(error);
 		}
 	}
 
 	then(onResolve, onReject) {
-		this.fulfilledCallback = onResolve;
-		this.rejectedCallback = onReject;
-		return new Promise((resolve, reject) => {
-
-		});
+		if (this.status === STATUS.PENDING) {
+			return new PromiseA((resolve, reject) => {
+				this.fulfilledCallback = (value) => {
+					let newValue = onResolve(value);
+					resolveValue(newValue, resolve, reject);
+				};
+				this.rejectedCallback = (value) => {
+					let newValue = onReject(value);
+					resolveValue(newValue, resolve, reject);
+				};
+			});
+		}
+		if (this.status === STATUS.FULFILLED || this.status === STATUS.REJECTED) {
+			return new PromiseA((resolve, reject) => {
+				let callback = returnValue;
+				if (this.status === STATUS.FULFILLED) {
+					callback = onResolve;
+				}
+				if (this.status === STATUS.REJECTED) {
+					callback = onReject;
+				}
+				let newValue = callback(this.resultValue);
+				resolveValue(newValue, resolve, reject);
+			});
+		}
 	}
 }
 
