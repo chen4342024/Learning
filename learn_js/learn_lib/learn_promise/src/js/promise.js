@@ -23,11 +23,17 @@ class PromiseA {
 		this.status = STATUS.PENDING;
 		this.fulfilledCallback = returnValue;
 		this.rejectedCallback = returnValue;
-		executor((value) => {
+		const resolve = (value) => {
 			this.resolve(value);
-		}, (err) => {
+		};
+		const reject = (err) => {
 			this.reject(err);
-		});
+		};
+		try {
+			executor(resolve, reject);
+		} catch (err) {
+			reject(err);
+		}
 	}
 
 	resolve(value) {
@@ -72,6 +78,10 @@ class PromiseA {
 				resolveValue(newValue, resolve, reject);
 			});
 		}
+	}
+
+	catch(reject) {
+		return this.then(null, reject);
 	}
 }
 

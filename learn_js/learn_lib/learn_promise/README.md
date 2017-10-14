@@ -1,28 +1,15 @@
-
-
-### 命令使用
-1. npm run clean 删除dist目录
-2. npm run watch 开发时候使用
-3. npm run build 测试打包的时候使用
-
-
-### 备注
-1. TIDL填写页2017/8/28,改版全面使用了webpack2打包工具。
-2. 页面还是 直接迁移过来的，未做优化
-
-### 目录结构
-```
-license
-+static
-    + dist
-     +js
-     ...
-     + src
-      +js
-      +scss
-      +page
-        index.html
-        ...
- ```
+#### 实现Promise的基本功能
+##### 构造函数
+##### * \[X] then方法
+1. 支持链式操作
+2. 一旦状态改变，就不会再变，任何时候都可以得到这个结果
+##### catch方法
+##### all 方法
+##### race 方法
+##### resolve方法
+##### reject方法
+##### done方法
+##### finally方法
+##### try 方法
 
 

@@ -26,5 +26,4 @@ setTimeout(function () {
 		console.log("success2 --> " + value);
 	})
 }, 3000);
-
 ;
