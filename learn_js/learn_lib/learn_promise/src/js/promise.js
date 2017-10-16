@@ -56,12 +56,21 @@ class PromiseA {
 		if (this.status === STATUS.PENDING) {
 			return new PromiseA((resolve, reject) => {
 				this.fulfilledCallback = (value) => {
-					let newValue = onResolve(value);
-					resolveValue(newValue, resolve, reject);
+					try {
+						let newValue = onResolve(value);
+						resolveValue(newValue, resolve, reject);
+					} catch (err) {
+						reject(err);
+					}
 				};
 				this.rejectedCallback = (value) => {
-					let newValue = onReject(value);
-					resolveValue(newValue, resolve, reject);
+					try {
+						let newValue = onReject(value);
+						resolveValue(newValue, resolve, reject);
+					} catch (err) {
+						reject(err);
+					}
+
 				};
 			});
 		}
@@ -74,8 +83,12 @@ class PromiseA {
 				if (this.status === STATUS.REJECTED) {
 					callback = onReject;
 				}
-				let newValue = callback(this.resultValue);
-				resolveValue(newValue, resolve, reject);
+				try {
+					let newValue = callback(this.resultValue);
+					resolveValue(newValue, resolve, reject);
+				} catch (err) {
+					reject(err);
+				}
 			});
 		}
 	}
