@@ -1,7 +1,7 @@
 import PromiseA from './promise'
 
 
-var p = new PromiseA(function (resolve, reject) {
+let p = new PromiseA(function (resolve, reject) {
 	console.log("开始承诺。 。。。。");
 	setTimeout(() => {
 		resolve("2秒后成功返回");
@@ -18,7 +18,7 @@ function runAsync() {
 }
 
 setTimeout(function () {
-	alert("3 秒后");
+	console.log("3 秒后");
 	p.then((value) => {
 		console.log("success --> " + value);
 		return runAsync();
@@ -26,4 +26,21 @@ setTimeout(function () {
 		console.log("success2 --> " + value);
 	})
 }, 3000);
-;
+
+//all 方法
+let p1 = new PromiseA(function (resolve, reject) {
+	setTimeout(() => {
+		console.log("resolve p1 ");
+		resolve("p1");
+	}, 2000);
+});
+let p2 = 123;
+let p3 = new PromiseA(function (resolve, reject) {
+	setTimeout(() => {
+		console.log("resolve p3 ");
+		resolve("p3");
+	}, 4000);
+});
+PromiseA.all([p1, p2, p3]).then(function (values) {
+	console.log(values);
+});

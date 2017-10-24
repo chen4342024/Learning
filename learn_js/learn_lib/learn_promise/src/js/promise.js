@@ -96,6 +96,34 @@ class PromiseA {
 	catch(reject) {
 		return this.then(null, reject);
 	}
+
+	static all(promiseList = []) {
+		return new Promise((resolve, reject) => {
+			let results = [];
+			let len = promiseList.length;
+			let resolveCount = 0;
+
+			let resolver = function (index, value) {
+				resolveCount++;
+				results[index] = value;
+				if (resolveCount === len) {
+					resolve(results);
+				}
+			};
+
+			promiseList.forEach((p, i) => {
+				if (p instanceof PromiseA) {
+					p.then((value) => {
+						resolver(i, value);
+					}, (err) => {
+						reject(err);
+					})
+				} else {
+					resolver(i, p);
+				}
+			})
+		});
+	}
 }
 
 
