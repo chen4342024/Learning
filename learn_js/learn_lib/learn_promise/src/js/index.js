@@ -41,6 +41,16 @@ let p3 = new PromiseA(function (resolve, reject) {
 		resolve("p3");
 	}, 4000);
 });
-PromiseA.all([p1, p2, p3]).then(function (values) {
-	console.log(values);
-});
+
+PromiseA.all([p1, p2, p3])
+	.then(function (values) {
+		console.log("all done");
+		console.log(values);
+	});
+
+//race 方法
+// PromiseA.race([p1, p2, p3])
+// 	.then(function (value) {
+// 	console.log('race done');
+// 	console.log(value);
+// });

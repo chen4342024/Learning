@@ -98,7 +98,7 @@ class PromiseA {
 	}
 
 	static all(promiseList = []) {
-		return new Promise((resolve, reject) => {
+		return new PromiseA((resolve, reject) => {
 			let results = [];
 			let len = promiseList.length;
 			let resolveCount = 0;
@@ -124,6 +124,22 @@ class PromiseA {
 			})
 		});
 	}
+
+	// static race(promiseList = []) {
+	// 	return new PromiseA((resolve, reject) => {
+	// 		promiseList.forEach((p) => {
+	// 			if (p instanceof PromiseA) {
+	// 				p.then((value) => {
+	// 					resolve(value);
+	// 				}, (err) => {
+	// 					reject(err);
+	// 				})
+	// 			} else {
+	// 				resolve(i, p);
+	// 			}
+	// 		})
+	// 	})
+	// }
 }
 
 
