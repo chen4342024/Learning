@@ -24,7 +24,7 @@ setTimeout(function () {
 		return runAsync();
 	}).then((value) => {
 		console.log("success2 --> " + value);
-	})
+	});
 }, 3000);
 
 //all 方法
@@ -49,8 +49,8 @@ PromiseA.all([p1, p2, p3])
 	});
 
 //race 方法
-// PromiseA.race([p1, p2, p3])
-// 	.then(function (value) {
-// 	console.log('race done');
-// 	console.log(value);
-// });
+PromiseA.race([p1, p3])
+	.then(function (value) {
+		console.log('race done');
+		console.log(value);
+	});

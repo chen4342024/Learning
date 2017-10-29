@@ -1,7 +1,14 @@
+import EventEmitter from './eventEmitter';
+
 const STATUS = {
 	PENDING: 'pending',
 	FULFILLED: 'fulfilled',
 	REJECTED: 'rejected'
+};
+
+const EventType = {
+	fulfill: 'fulfill',
+	reject: 'reject'
 };
 
 function returnValue(value) {
@@ -20,9 +27,9 @@ function resolveValue(newValue, resolve, reject) {
 
 class PromiseA {
 	constructor(executor) {
+		this.eventEmitter = new EventEmitter();
 		this.status = STATUS.PENDING;
-		this.fulfilledCallback = returnValue;
-		this.rejectedCallback = returnValue;
+
 		const resolve = (value) => {
 			this.resolve(value);
 		};
@@ -40,7 +47,7 @@ class PromiseA {
 		if (this.status === STATUS.PENDING) {
 			this.status = STATUS.FULFILLED;
 			this.resultValue = value;
-			this.fulfilledCallback(value);
+			this.eventEmitter.trigger(EventType.fulfill, value);
 		}
 	}
 
@@ -48,30 +55,31 @@ class PromiseA {
 		if (this.status === STATUS.PENDING) {
 			this.status = STATUS.REJECTED;
 			this.resultValue = error;
-			this.rejectedCallback(error);
+			this.eventEmitter.trigger(EventType.reject, error);
 		}
 	}
 
 	then(onResolve, onReject) {
 		if (this.status === STATUS.PENDING) {
 			return new PromiseA((resolve, reject) => {
-				this.fulfilledCallback = (value) => {
+
+				this.eventEmitter.on('fulfill', (value) => {
 					try {
 						let newValue = onResolve(value);
 						resolveValue(newValue, resolve, reject);
 					} catch (err) {
 						reject(err);
 					}
-				};
-				this.rejectedCallback = (value) => {
+				});
+
+				this.eventEmitter.on('reject', (value) => {
 					try {
 						let newValue = onReject(value);
 						resolveValue(newValue, resolve, reject);
 					} catch (err) {
 						reject(err);
 					}
-
-				};
+				});
 			});
 		}
 		if (this.status === STATUS.FULFILLED || this.status === STATUS.REJECTED) {
@@ -125,21 +133,21 @@ class PromiseA {
 		});
 	}
 
-	// static race(promiseList = []) {
-	// 	return new PromiseA((resolve, reject) => {
-	// 		promiseList.forEach((p) => {
-	// 			if (p instanceof PromiseA) {
-	// 				p.then((value) => {
-	// 					resolve(value);
-	// 				}, (err) => {
-	// 					reject(err);
-	// 				})
-	// 			} else {
-	// 				resolve(i, p);
-	// 			}
-	// 		})
-	// 	})
-	// }
+	static race(promiseList = []) {
+		return new PromiseA((resolve, reject) => {
+			promiseList.forEach((p, i) => {
+				if (p instanceof PromiseA) {
+					p.then((value) => {
+						resolve(value);
+					}, (err) => {
+						reject(err);
+					})
+				} else {
+					resolve(p);
+				}
+			})
+		})
+	}
 }
 
 
