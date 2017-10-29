@@ -15,6 +15,10 @@ function returnValue(value) {
 	return value;
 }
 
+function isObject(obj) {
+	return Object.prototype.toString.call(obj) === '[object Object]';
+}
+
 
 function resolveValue(newValue, resolve, reject) {
 	if (newValue instanceof PromiseA) {
@@ -147,6 +151,15 @@ class PromiseA {
 				}
 			})
 		})
+	}
+
+	static resolve(p) {
+		if (p instanceof PromiseA) {
+			return p;
+		}
+		if (isObject(p)) {
+
+		}
 	}
 }
 
