@@ -1,4 +1,5 @@
 import EventEmitter from './eventEmitter';
+import microtask from 'microtask';
 
 const STATUS = {
 	PENDING: 'pending',
@@ -11,12 +12,23 @@ const EventType = {
 	reject: 'reject'
 };
 
+function noop() {
+}
+
+function isFunction(fn) {
+	return typeof fn === 'function';
+}
+
 function returnValue(value) {
 	return value;
 }
 
 function isObject(obj) {
 	return Object.prototype.toString.call(obj) === '[object Object]';
+}
+
+function isThenAble(obj) {
+	return isObject(obj) && isFunction(obj.then)
 }
 
 
@@ -48,22 +60,26 @@ class PromiseA {
 	}
 
 	resolve(value) {
-		if (this.status === STATUS.PENDING) {
-			this.status = STATUS.FULFILLED;
-			this.resultValue = value;
-			this.eventEmitter.trigger(EventType.fulfill, value);
-		}
+		microtask(() => {
+			if (this.status === STATUS.PENDING) {
+				this.status = STATUS.FULFILLED;
+				this.resultValue = value;
+				this.eventEmitter.trigger(EventType.fulfill, value);
+			}
+		})
 	}
 
 	reject(error) {
-		if (this.status === STATUS.PENDING) {
-			this.status = STATUS.REJECTED;
-			this.resultValue = error;
-			this.eventEmitter.trigger(EventType.reject, error);
-		}
+		microtask(() => {
+			if (this.status === STATUS.PENDING) {
+				this.status = STATUS.REJECTED;
+				this.resultValue = error;
+				this.eventEmitter.trigger(EventType.reject, error);
+			}
+		});
 	}
 
-	then(onResolve, onReject) {
+	then(onResolve = noop, onReject = noop) {
 		if (this.status === STATUS.PENDING) {
 			return new PromiseA((resolve, reject) => {
 
@@ -107,6 +123,13 @@ class PromiseA {
 
 	catch(reject) {
 		return this.then(null, reject);
+	}
+
+	done(onFulfilled, onRejected) {
+		this.then(onFulfilled, onRejected)
+			.catch((error) => {
+				throw error;
+			})
 	}
 
 	static all(promiseList = []) {
@@ -157,10 +180,21 @@ class PromiseA {
 		if (p instanceof PromiseA) {
 			return p;
 		}
-		if (isObject(p)) {
-
+		if (isThenAble(p)) {
+			return new PromiseA(p.then);
 		}
+		return new PromiseA((resolve) => {
+			resolve(p);
+		})
 	}
+
+	static reject(p) {
+		return new PromiseA((resolve, reject) => {
+			reject(p);
+		})
+	}
+
+
 }
 
 
