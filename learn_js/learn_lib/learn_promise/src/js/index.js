@@ -54,3 +54,6 @@ PromiseA.race([p1, p3])
 		console.log('race done');
 		console.log(value);
 	});
+
+
+
