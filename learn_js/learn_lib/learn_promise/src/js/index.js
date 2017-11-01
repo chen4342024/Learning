@@ -128,7 +128,11 @@ $('.J-testDone').on('click', () => {
 	});
 	p.then((value) => {
 		return aaa.value;
-	}).done();
+	}).then(()=>{
+		console.log('1111');
+	}).catch((value) => {
+		console.log(value);
+	});
 });
 
 
