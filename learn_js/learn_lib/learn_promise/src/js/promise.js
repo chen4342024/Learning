@@ -47,7 +47,15 @@ class PromiseA {
 		this.status = STATUS.PENDING;
 
 		const resolve = (value) => {
-			this.resolve(value);
+			if (value instanceof PromiseA) {
+				value.then((value) => {
+					this.resolve(value)
+				}, (error) => {
+					this.reject(error);
+				});
+			} else {
+				this.resolve(value);
+			}
 		};
 		const reject = (err) => {
 			this.reject(err);
@@ -79,23 +87,29 @@ class PromiseA {
 		});
 	}
 
-	then(onResolve = noop, onReject = noop) {
+	then(onResolve, onReject) {
 		if (this.status === STATUS.PENDING) {
 			return new PromiseA((resolve, reject) => {
-
 				this.eventEmitter.on('fulfill', (value) => {
 					try {
-						let newValue = onResolve(value);
-						resolveValue(newValue, resolve, reject);
+						if (onResolve) {
+							let newValue = onResolve(value);
+							resolve(newValue)
+						} else {
+							resolve(value);
+						}
 					} catch (err) {
 						reject(err);
 					}
 				});
-
 				this.eventEmitter.on('reject', (value) => {
 					try {
-						let newValue = onReject(value);
-						resolveValue(newValue, resolve, reject);
+						if (onReject) {
+							let newValue = onReject(value);
+							resolve(newValue);
+						} else {
+							reject(value);
+						}
 					} catch (err) {
 						reject(err);
 					}
@@ -194,7 +208,9 @@ class PromiseA {
 		})
 	}
 
+	static try() {
 
+	}
 }
 
 

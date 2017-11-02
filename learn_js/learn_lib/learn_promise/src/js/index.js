@@ -128,10 +128,47 @@ $('.J-testDone').on('click', () => {
 	});
 	p.then((value) => {
 		return aaa.value;
-	}).then(()=>{
+	}).then(() => {
 		console.log('1111');
 	}).catch((value) => {
 		console.log(value);
+	});
+});
+
+$('.J-testConstructor').on('click', () => {
+	let p = new PromiseA(function (resolve, reject) {
+		setTimeout(() => {
+			console.log("p1");
+			let p2 = new PromiseA(function (resolve, reject) {
+				setTimeout(() => {
+					console.log("p2");
+					resolve("p2");
+				}, 1000)
+			});
+			resolve(p2);
+		}, 1000)
+	});
+	p.then((value) => {
+		console.log('p1p2....' + value);
+	});
+});
+
+$('.J-testCatch').on('click', () => {
+	let p = new PromiseA(function (resolve, reject) {
+		setTimeout(() => {
+			resolve("1");
+		}, 1000)
+	});
+	p.then((value) => {
+		return aaa.value;
+	}).then(() => {
+		console.log('1111');
+	}).then(() => {
+		console.log('22222');
+	}).then(null, (value) => {
+		console.log('catch ---> ' + value);
+	}).then(() => {
+		console.log('33333');
 	});
 });
 

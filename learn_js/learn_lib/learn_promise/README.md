@@ -7,7 +7,7 @@
 - [x] all 方法
 - [x] race 方法
 - [x] resolve方法
-- [ ] reject方法
+- [x] reject方法
 - [x] done方法
 - [ ] finally方法
 - [ ] try 方法
