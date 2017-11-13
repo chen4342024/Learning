@@ -13,4 +13,4 @@
 - [ ] try 方法
 
 
-文章 ： 
+文章 ： https://github.com/chen4342024/Learning/blob/master/learn_js/learn_lib/learn_promise/promise%E7%AE%80%E5%8D%95%E5%AE%9E%E7%8E%B0.md
