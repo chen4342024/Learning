@@ -5,7 +5,7 @@
   "main": "src/index.js",
   "scripts": {
     "start": "webpack-dev-server --progress --host 127.0.0.1 --profile --hot --content-base",
-    "build:dev": "webpack --progress --config webpack.config.js"
+    "build": "webpack --progress --config webpack.config.js"
   },
   "author": "",
   "devDependencies": {
