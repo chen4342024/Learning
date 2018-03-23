@@ -8,31 +8,31 @@
 
 <script>
 export default {
-  name: "HelloWorld",
-  data() {
+  name: 'HelloWorld',
+  data () {
     return {
-      title: "这个是HelloWorld标题",
+      title: '这个是HelloWorld标题',
       seen: false,
-      firstName: "Foo",
-      lastName: "Bar",
-      msg:"1",
+      firstName: 'Foo',
+      lastName: 'Bar',
+      msg: '1',
       clickFunc: () => {
-        alert(1);
+        alert(1)
       }
-    };
+    }
   },
   computed: {
     msg: () => {
-      return "这个是HelloWorld信息";
+      return '这个是HelloWorld信息'
     },
     fullName: {
       // getter
-      get: function() {
+      get: function () {
         return this.firstName + ' ' + this.lastName
       },
       // setter
-      set: function(newValue) {
-        var names = newValue.split(' ');
+      set: function (newValue) {
+        var names = newValue.split(' ')
         this.firstName = names[0]
         this.lastName = names[names.length - 1]
       }

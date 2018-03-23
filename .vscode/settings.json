@@ -1,0 +1,18 @@
+{
+    "prettier.eslintIntegration": true,
+    "prettier.useTabs": false,
+    "eslint.enable": true,
+    "eslint.run": "onType",
+    "eslint.autoFixOnSave": true,
+    "eslint.options": {
+        "extensions": [".js", ".vue"]
+    },
+    "eslint.validate": [
+        "javascript",
+        "javascriptreact",
+        {
+            "language": "vue",
+            "autoFix": true,
+        }
+    ]
+}
