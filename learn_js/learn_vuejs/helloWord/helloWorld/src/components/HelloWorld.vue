@@ -1,14 +1,18 @@
 <template>
   <div class="hello">
-    <h1 class="title">{{ msg + '123123' }}</h1>
-    <h2 class="msg " @click="clickFunc"> {{fullName}} </h2>
-    <input v-model="msg">
+    <h1 class="title">{{ msg}}</h1>
+    <h1 class="title">{{ _isVue}}</h1>
+    <h1 class="title">{{ isVue}}</h1>
+    <input type="text" v-model="msg">
+    <dog/>
   </div>
 </template>
 
 <script>
+import Dog from './Dog'
 export default {
   name: 'HelloWorld',
+  components: { Dog },
   data () {
     return {
       title: '这个是HelloWorld标题',
@@ -16,13 +20,15 @@ export default {
       firstName: 'Foo',
       lastName: 'Bar',
       msg: '1',
+      _isVue: false,
+      isVue: false,
       clickFunc: () => {
         alert(1)
       }
     }
   },
   computed: {
-    msg: () => {
+    msgs: () => {
       return '这个是HelloWorld信息'
     },
     fullName: {
