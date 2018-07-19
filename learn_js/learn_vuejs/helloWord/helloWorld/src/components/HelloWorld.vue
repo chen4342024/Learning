@@ -1,10 +1,9 @@
 <template>
   <div class="hello">
     <h1 class="title">{{ msg}}</h1>
-    <h1 class="title">{{ _isVue}}</h1>
-    <h1 class="title">{{ isVue}}</h1>
+    <span v-for="item in list">{{item}}</span>
     <input type="text" v-model="msg">
-    <dog/>
+    <button @click="handleList">处理List</button>
   </div>
 </template>
 
@@ -22,6 +21,7 @@ export default {
       msg: '1',
       _isVue: false,
       isVue: false,
+      list: [],
       clickFunc: () => {
         alert(1)
       }
@@ -31,6 +31,7 @@ export default {
     msgs: () => {
       return '这个是HelloWorld信息'
     },
+
     fullName: {
       // getter
       get: function () {
@@ -42,6 +43,12 @@ export default {
         this.firstName = names[0]
         this.lastName = names[names.length - 1]
       }
+    }
+  },
+
+  methods: {
+    handleList: function () {
+      this.list = this.list.concat([1, 2, 3])
     }
   }
 }

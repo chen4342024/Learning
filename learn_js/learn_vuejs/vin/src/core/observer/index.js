@@ -1,12 +1,22 @@
 import Dep from "./dep";
-
+// import { arrayMethods } from './array'
+// import { def } from '../util/index'
 /**
  * 观察数据变化
  */
 export class Observer {
     constructor(value) {
         this.value = value;
-        this.walk(value)
+
+        this.dep = new Dep();
+        // def(value, '__ob__', this);
+
+        if (Array.isArray(value)) {
+            // patchProto(value, arrayMethods);
+            this.observeArray(value);
+        } else {
+            this.walk(value)
+        }
     }
 
     walk(obj) {
@@ -15,7 +25,17 @@ export class Observer {
             defineReactive(obj, keys[i]);
         }
     }
+
+    observeArray(items) {
+        for (let i = 0, l = items.length; i < l; i++) {
+            observe(items[i]);
+        }
+    }
 };
+
+// function patchProto(target, src, key) {
+//     target.__proto__ = src;
+// }
 
 
 /**
@@ -23,6 +43,9 @@ export class Observer {
  * @param {*} value 
  */
 export function observe(value) {
+    if (!(obj !== null && typeof obj === 'object')) {
+        return
+    }
     let ob = new Observer(value);
     return ob;
 }
@@ -51,6 +74,7 @@ function defineReactive(obj, key) {
 
     const dep = new Dep();
 
+    // let childOb = val && observe(val);
     Object.defineProperty(obj, key, {
         enumerable: true,
         configurable: true,
@@ -58,6 +82,12 @@ function defineReactive(obj, key) {
             const value = getter ? getter.call(obj) : val;
             if (Dep.target) {
                 dep.depend();
+                // if (childOb) {
+                //     childOb.dep.depend()
+                //     if (Array.isArray(value)) {
+                //         dependArray(value)
+                //     }
+                // }
             }
             return value;
         },
@@ -75,3 +105,13 @@ function defineReactive(obj, key) {
         }
     });
 }
+
+// function dependArray(value) {
+//     for (let e, i = 0, l = value.length; i < l; i++) {
+//         e = value[i]
+//         e && e.__ob__ && e.__ob__.dep.depend()
+//         if (Array.isArray(e)) {
+//             dependArray(e)
+//         }
+//     }
+// }
