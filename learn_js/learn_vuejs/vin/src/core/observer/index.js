@@ -1,6 +1,6 @@
 import Dep from "./dep";
-// import { arrayMethods } from './array'
-// import { def } from '../util/index'
+import { arrayMethods } from './array'
+import { def, isRealObject } from '../util/index'
 /**
  * 观察数据变化
  */
@@ -9,10 +9,10 @@ export class Observer {
         this.value = value;
 
         this.dep = new Dep();
-        // def(value, '__ob__', this);
+        def(value, '__ob__', this);
 
         if (Array.isArray(value)) {
-            // patchProto(value, arrayMethods);
+            patchProto(value, arrayMethods);
             this.observeArray(value);
         } else {
             this.walk(value)
@@ -33,9 +33,9 @@ export class Observer {
     }
 };
 
-// function patchProto(target, src, key) {
-//     target.__proto__ = src;
-// }
+function patchProto(target, src, key) {
+    target.__proto__ = src;
+}
 
 
 /**
@@ -43,7 +43,7 @@ export class Observer {
  * @param {*} value 
  */
 export function observe(value) {
-    if (!(obj !== null && typeof obj === 'object')) {
+    if (!isRealObject(value)) {
         return
     }
     let ob = new Observer(value);
@@ -74,7 +74,7 @@ function defineReactive(obj, key) {
 
     const dep = new Dep();
 
-    // let childOb = val && observe(val);
+    let childOb = val && observe(val);
     Object.defineProperty(obj, key, {
         enumerable: true,
         configurable: true,
@@ -82,12 +82,12 @@ function defineReactive(obj, key) {
             const value = getter ? getter.call(obj) : val;
             if (Dep.target) {
                 dep.depend();
-                // if (childOb) {
-                //     childOb.dep.depend()
-                //     if (Array.isArray(value)) {
-                //         dependArray(value)
-                //     }
-                // }
+                if (childOb) {
+                    childOb.dep.depend()
+                    if (Array.isArray(value)) {
+                        dependArray(value)
+                    }
+                }
             }
             return value;
         },
@@ -106,12 +106,12 @@ function defineReactive(obj, key) {
     });
 }
 
-// function dependArray(value) {
-//     for (let e, i = 0, l = value.length; i < l; i++) {
-//         e = value[i]
-//         e && e.__ob__ && e.__ob__.dep.depend()
-//         if (Array.isArray(e)) {
-//             dependArray(e)
-//         }
-//     }
-// }
+function dependArray(value) {
+    for (let e, i = 0, l = value.length; i < l; i++) {
+        e = value[i]
+        e && e.__ob__ && e.__ob__.dep.depend()
+        if (Array.isArray(e)) {
+            dependArray(e)
+        }
+    }
+}

@@ -37,15 +37,16 @@ export function isReserved(str) {
 export function noop() {}
 
 
-// export function def(obj, key, val, enumerable) {
-//     Object.defineProperty(obj, key, {
-//         value: val,
-//         enumerable: !!enumerable,
-//         writable: true,
-//         configurable: true
-//     });
-// }
+export function def(obj, key, val, enumerable) {
+    Object.defineProperty(obj, key, {
+        value: val,
+        enumerable: !!enumerable,
+        writable: true,
+        configurable: true
+    });
+}
 
-// export function isObject(obj) {
-//     return obj !== null && typeof obj === 'object'
-// }
+export function isRealObject(obj) {
+    // return typeof obj === 'object';
+    return Object.prototype.toString.call(obj) === '[object Object]';
+}

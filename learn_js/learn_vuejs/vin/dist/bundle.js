@@ -35,24 +35,19 @@ function isReserved(str) {
 
 function noop() {}
 
-// export function def(obj, key, val, enumerable) {
-//     Object.defineProperty(obj, key, {
-//         value: val,
-//         enumerable: !!enumerable,
-//         writable: true,
-//         configurable: true
-//     });
-// }
+function def(obj, key, val, enumerable) {
+    Object.defineProperty(obj, key, {
+        value: val,
+        enumerable: !!enumerable,
+        writable: true,
+        configurable: true
+    });
+}
 
-// export function isObject(obj) {
-//     return obj !== null && typeof obj === 'object'
-// }
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
-  return typeof obj;
-} : function (obj) {
-  return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
-};
+function isRealObject(obj) {
+    // return typeof obj === 'object';
+    return Object.prototype.toString.call(obj) === '[object Object]';
+}
 
 var classCallCheck = function (instance, Constructor) {
   if (!(instance instanceof Constructor)) {
@@ -131,8 +126,38 @@ function popTarget() {
     Dep.target = targetStack.pop();
 }
 
-// import { arrayMethods } from './array'
-// import { def } from '../util/index'
+var methodsToPatch = ['pop', 'push', 'shift', 'unshift', 'splice', 'sort', 'reverse'];
+
+var arrayProto = Array.prototype;
+var arrayMethods = Object.create(arrayProto);
+
+methodsToPatch.forEach(function (method) {
+    var original = arrayProto[method];
+    def(arrayMethods, method, function () {
+        for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+            args[_key] = arguments[_key];
+        }
+
+        var result = original.apply(this, args);
+        var ob = this.__ob__;
+
+        var inserted = void 0;
+        switch (method) {
+            case 'push':
+            case 'unshift':
+                inserted = args;
+                break;
+            case 'splice':
+                inserted = args.slice(2);
+                break;
+        }
+        if (inserted) ob.observeArray(inserted);
+
+        ob.dep.notify();
+        return result;
+    });
+});
+
 /**
  * 观察数据变化
  */
@@ -143,10 +168,10 @@ var Observer = function () {
         this.value = value;
 
         this.dep = new Dep();
-        // def(value, '__ob__', this);
+        def(value, '__ob__', this);
 
         if (Array.isArray(value)) {
-            // patchProto(value, arrayMethods);
+            patchProto(value, arrayMethods);
             this.observeArray(value);
         } else {
             this.walk(value);
@@ -154,7 +179,7 @@ var Observer = function () {
     }
 
     createClass(Observer, [{
-        key: "walk",
+        key: 'walk',
         value: function walk(obj) {
             var keys = Object.keys(obj);
             for (var i = 0; i < keys.length; i++) {
@@ -162,7 +187,7 @@ var Observer = function () {
             }
         }
     }, {
-        key: "observeArray",
+        key: 'observeArray',
         value: function observeArray(items) {
             for (var i = 0, l = items.length; i < l; i++) {
                 observe(items[i]);
@@ -171,17 +196,16 @@ var Observer = function () {
     }]);
     return Observer;
 }();
-// function patchProto(target, src, key) {
-//     target.__proto__ = src;
-// }
-
+function patchProto(target, src, key) {
+    target.__proto__ = src;
+}
 
 /**
  * 观察数据
  * @param {*} value 
  */
 function observe(value) {
-    if (!(obj !== null && (typeof obj === "undefined" ? "undefined" : _typeof(obj)) === 'object')) {
+    if (!isRealObject(value)) {
         return;
     }
     var ob = new Observer(value);
@@ -194,7 +218,7 @@ function observe(value) {
  * @param {*} key 
  */
 function defineReactive(obj, key) {
-    console.log("defineReactive  obj -> " + obj + " , key -> " + key);
+    console.log('defineReactive  obj -> ' + obj + ' , key -> ' + key);
     var property = Object.getOwnPropertyDescriptor(obj, key);
     if (property && property.configurable === false) {
         return;
@@ -210,7 +234,7 @@ function defineReactive(obj, key) {
 
     var dep = new Dep();
 
-    // let childOb = val && observe(val);
+    var childOb = val && observe(val);
     Object.defineProperty(obj, key, {
         enumerable: true,
         configurable: true,
@@ -218,12 +242,12 @@ function defineReactive(obj, key) {
             var value = getter ? getter.call(obj) : val;
             if (Dep.target) {
                 dep.depend();
-                // if (childOb) {
-                //     childOb.dep.depend()
-                //     if (Array.isArray(value)) {
-                //         dependArray(value)
-                //     }
-                // }
+                if (childOb) {
+                    childOb.dep.depend();
+                    if (Array.isArray(value)) {
+                        dependArray(value);
+                    }
+                }
             }
             return value;
         },
@@ -240,6 +264,16 @@ function defineReactive(obj, key) {
             dep.notify();
         }
     });
+}
+
+function dependArray(value) {
+    for (var e, i = 0, l = value.length; i < l; i++) {
+        e = value[i];
+        e && e.__ob__ && e.__ob__.dep.depend();
+        if (Array.isArray(e)) {
+            dependArray(e);
+        }
+    }
 }
 
 var Watcher = function () {
