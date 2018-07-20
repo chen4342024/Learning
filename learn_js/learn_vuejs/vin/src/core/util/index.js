@@ -47,6 +47,6 @@ export function def(obj, key, val, enumerable) {
 }
 
 export function isRealObject(obj) {
-    // return typeof obj === 'object';
-    return Object.prototype.toString.call(obj) === '[object Object]';
+    return obj !== null && typeof obj === 'object';
+    // return Object.prototype.toString.call(obj) === '[object Object]';
 }

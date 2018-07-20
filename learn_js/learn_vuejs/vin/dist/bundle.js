@@ -1,3 +1,5 @@
+var _typeof$1 = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
 function remove(arr, item) {
     if (arr.length) {
         var index = arr.indexOf(item);
@@ -45,45 +47,24 @@ function def(obj, key, val, enumerable) {
 }
 
 function isRealObject(obj) {
-    // return typeof obj === 'object';
-    return Object.prototype.toString.call(obj) === '[object Object]';
+    return obj !== null && (typeof obj === 'undefined' ? 'undefined' : _typeof$1(obj)) === 'object';
+    // return Object.prototype.toString.call(obj) === '[object Object]';
 }
 
-var classCallCheck = function (instance, Constructor) {
-  if (!(instance instanceof Constructor)) {
-    throw new TypeError("Cannot call a class as a function");
-  }
-};
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var createClass = function () {
-  function defineProperties(target, props) {
-    for (var i = 0; i < props.length; i++) {
-      var descriptor = props[i];
-      descriptor.enumerable = descriptor.enumerable || false;
-      descriptor.configurable = true;
-      if ("value" in descriptor) descriptor.writable = true;
-      Object.defineProperty(target, descriptor.key, descriptor);
-    }
-  }
-
-  return function (Constructor, protoProps, staticProps) {
-    if (protoProps) defineProperties(Constructor.prototype, protoProps);
-    if (staticProps) defineProperties(Constructor, staticProps);
-    return Constructor;
-  };
-}();
-
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 var uid = 0;
 
 var Dep = function () {
     function Dep() {
-        classCallCheck(this, Dep);
+        _classCallCheck(this, Dep);
 
         this.id = uid++;
         this.subs = [];
     }
 
-    createClass(Dep, [{
+    _createClass(Dep, [{
         key: 'addSubs',
         value: function addSubs(watcher) {
             this.subs.push(watcher);
@@ -110,6 +91,7 @@ var Dep = function () {
             }
         }
     }]);
+
     return Dep;
 }();
 
@@ -158,12 +140,15 @@ methodsToPatch.forEach(function (method) {
     });
 });
 
+var _createClass$1 = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck$1(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 /**
  * 观察数据变化
  */
 var Observer = function () {
     function Observer(value) {
-        classCallCheck(this, Observer);
+        _classCallCheck$1(this, Observer);
 
         this.value = value;
 
@@ -178,7 +163,7 @@ var Observer = function () {
         }
     }
 
-    createClass(Observer, [{
+    _createClass$1(Observer, [{
         key: 'walk',
         value: function walk(obj) {
             var keys = Object.keys(obj);
@@ -194,6 +179,7 @@ var Observer = function () {
             }
         }
     }]);
+
     return Observer;
 }();
 function patchProto(target, src, key) {
@@ -276,9 +262,14 @@ function dependArray(value) {
     }
 }
 
+var _createClass$2 = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck$2(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
 var Watcher = function () {
     function Watcher(options) {
-        classCallCheck(this, Watcher);
+        _classCallCheck$2(this, Watcher);
+
         var vm = options.vm,
             cb = options.cb,
             expOrFn = options.expOrFn;
@@ -290,7 +281,7 @@ var Watcher = function () {
         this.value = this.get();
     }
 
-    createClass(Watcher, [{
+    _createClass$2(Watcher, [{
         key: 'update',
         value: function update() {
             var value = this.get();
@@ -311,8 +302,13 @@ var Watcher = function () {
         key: 'teardown',
         value: function teardown() {}
     }]);
+
     return Watcher;
 }();
+
+var _createClass$3 = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck$3(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 /**
  * Vin类
@@ -320,12 +316,12 @@ var Watcher = function () {
 
 var Vin = function () {
     function Vin(options) {
-        classCallCheck(this, Vin);
+        _classCallCheck$3(this, Vin);
 
         this.init(options);
     }
 
-    createClass(Vin, [{
+    _createClass$3(Vin, [{
         key: 'init',
         value: function init(options) {
             console.log('init');
@@ -369,6 +365,7 @@ var Vin = function () {
             };
         }
     }]);
+
     return Vin;
 }();
 
