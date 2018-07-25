@@ -6,19 +6,28 @@ import { def, isRealObject } from '../util/index'
  */
 export class Observer {
     constructor(value) {
+
         this.value = value;
 
+        // 定义当前观察者的依赖，主要用于watcher
         this.dep = new Dep();
         def(value, '__ob__', this);
 
+        
         if (Array.isArray(value)) {
+            // 数组情况下，需要对push等方法进行监听
             patchProto(value, arrayMethods);
             this.observeArray(value);
         } else {
+            // 普通对象，则监听整个对象
             this.walk(value)
         }
     }
 
+    /**
+     * 监听对象的getter和setter
+     * @param {}} obj 
+     */
     walk(obj) {
         const keys = Object.keys(obj)
         for (let i = 0; i < keys.length; i++) {
@@ -26,6 +35,10 @@ export class Observer {
         }
     }
 
+    /**
+     * 监听数组 
+     * @param {*} items 
+     */
     observeArray(items) {
         for (let i = 0, l = items.length; i < l; i++) {
             observe(items[i]);
@@ -33,6 +46,7 @@ export class Observer {
     }
 };
 
+// 将原型指向src
 function patchProto(target, src, key) {
     target.__proto__ = src;
 }
@@ -72,6 +86,7 @@ function defineReactive(obj, key) {
         val = obj[key]
     }
 
+    // 定义Dep对象，用于收集依赖
     const dep = new Dep();
 
     let childOb = val && observe(val);
@@ -80,8 +95,11 @@ function defineReactive(obj, key) {
         configurable: true,
         get: function() {
             const value = getter ? getter.call(obj) : val;
+            // 由于getter是闭包，故外部利用getter来收集依赖，
+            // Dep.target为一个全局变量，存储了当前正在调用getter的 watcher
             if (Dep.target) {
                 dep.depend();
+                // 如果是数组，则调用数组的依赖收集，并监听所有子项
                 if (childOb) {
                     childOb.dep.depend()
                     if (Array.isArray(value)) {
@@ -101,11 +119,13 @@ function defineReactive(obj, key) {
             } else {
                 val = newVal
             }
+            // 通知之前所以依赖的 watcher
             dep.notify()
         }
     });
 }
 
+// 收集数组的依赖
 function dependArray(value) {
     for (let e, i = 0, l = value.length; i < l; i++) {
         e = value[i]

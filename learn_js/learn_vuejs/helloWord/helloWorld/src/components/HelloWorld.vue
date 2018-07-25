@@ -46,9 +46,16 @@ export default {
     }
   },
 
+  watch: {
+    list: function (newVal, oldVal) {
+      console.log(`list : newVal --> ${newVal} , oldVal --> ${oldVal}`)
+    }
+  },
+
   methods: {
     handleList: function () {
-      this.list = this.list.concat([1, 2, 3])
+      // this.list = this.list.concat([1, 2, 3])
+      this.list.push('123')
     }
   }
 }

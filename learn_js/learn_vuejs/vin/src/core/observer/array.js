@@ -1,5 +1,7 @@
 import { def } from '../util/index'
 
+
+// 需要打补丁的方法
 let methodsToPatch = [
     'pop', 'push', 'shift', 'unshift', 'splice', 'sort', 'reverse'
 ];

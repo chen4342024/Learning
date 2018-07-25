@@ -1,4 +1,32 @@
-var _typeof$1 = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
+  return typeof obj;
+} : function (obj) {
+  return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+};
+
+var classCallCheck = function (instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+};
+
+var createClass = function () {
+  function defineProperties(target, props) {
+    for (var i = 0; i < props.length; i++) {
+      var descriptor = props[i];
+      descriptor.enumerable = descriptor.enumerable || false;
+      descriptor.configurable = true;
+      if ("value" in descriptor) descriptor.writable = true;
+      Object.defineProperty(target, descriptor.key, descriptor);
+    }
+  }
+
+  return function (Constructor, protoProps, staticProps) {
+    if (protoProps) defineProperties(Constructor.prototype, protoProps);
+    if (staticProps) defineProperties(Constructor, staticProps);
+    return Constructor;
+  };
+}();
 
 function remove(arr, item) {
     if (arr.length) {
@@ -47,41 +75,63 @@ function def(obj, key, val, enumerable) {
 }
 
 function isRealObject(obj) {
-    return obj !== null && (typeof obj === 'undefined' ? 'undefined' : _typeof$1(obj)) === 'object';
+    return obj !== null && (typeof obj === 'undefined' ? 'undefined' : _typeof(obj)) === 'object';
     // return Object.prototype.toString.call(obj) === '[object Object]';
 }
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 var uid = 0;
+
+/**
+ * 用来收集依赖
+ */
 
 var Dep = function () {
     function Dep() {
-        _classCallCheck(this, Dep);
+        classCallCheck(this, Dep);
 
         this.id = uid++;
         this.subs = [];
     }
 
-    _createClass(Dep, [{
-        key: 'addSubs',
-        value: function addSubs(watcher) {
+    /**
+     * 添加 watcher
+     * @param {*} watcher 
+     */
+
+
+    createClass(Dep, [{
+        key: 'addSub',
+        value: function addSub(watcher) {
             this.subs.push(watcher);
         }
+
+        /**
+         * 删除watcher
+         * @param {*} watcher 
+         */
+
     }, {
         key: 'removeSub',
         value: function removeSub(watcher) {
             remove(this.subs, watcher);
         }
+
+        /**
+         * 收集依赖的watcher
+         */
+
     }, {
         key: 'depend',
         value: function depend() {
             if (Dep.target) {
-                var watcher = Dep.target;
-                this.addSubs(watcher);
+                Dep.target.addDep(this);
             }
         }
+
+        /**
+         * 通知依赖
+         */
+
     }, {
         key: 'notify',
         value: function notify() {
@@ -91,23 +141,32 @@ var Dep = function () {
             }
         }
     }]);
-
     return Dep;
 }();
 
 
 Dep.target = null;
+
+// 一个堆栈,保存着所有的 watcher
 var targetStack = [];
 
+/**
+ * 将 watcher 推入堆栈，这样再 observer 里面可以通过 Dep.target 拿到
+ * @param {*} _target watcher
+ */
 function pushTarget(_target) {
     if (Dep.target) targetStack.push(Dep.target);
     Dep.target = _target;
 }
 
+/**
+ * 将 watcher 从堆栈中弹出
+ */
 function popTarget() {
     Dep.target = targetStack.pop();
 }
 
+// 需要打补丁的方法
 var methodsToPatch = ['pop', 'push', 'shift', 'unshift', 'splice', 'sort', 'reverse'];
 
 var arrayProto = Array.prototype;
@@ -140,30 +199,37 @@ methodsToPatch.forEach(function (method) {
     });
 });
 
-var _createClass$1 = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck$1(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 /**
  * 观察数据变化
  */
 var Observer = function () {
     function Observer(value) {
-        _classCallCheck$1(this, Observer);
+        classCallCheck(this, Observer);
+
 
         this.value = value;
 
+        // 定义当前观察者的依赖，主要用于watcher
         this.dep = new Dep();
         def(value, '__ob__', this);
 
         if (Array.isArray(value)) {
+            // 数组情况下，需要对push等方法进行监听
             patchProto(value, arrayMethods);
             this.observeArray(value);
         } else {
+            // 普通对象，则监听整个对象
             this.walk(value);
         }
     }
 
-    _createClass$1(Observer, [{
+    /**
+     * 监听对象的getter和setter
+     * @param {}} obj 
+     */
+
+
+    createClass(Observer, [{
         key: 'walk',
         value: function walk(obj) {
             var keys = Object.keys(obj);
@@ -171,6 +237,12 @@ var Observer = function () {
                 defineReactive(obj, keys[i]);
             }
         }
+
+        /**
+         * 监听数组 
+         * @param {*} items 
+         */
+
     }, {
         key: 'observeArray',
         value: function observeArray(items) {
@@ -179,9 +251,9 @@ var Observer = function () {
             }
         }
     }]);
-
     return Observer;
 }();
+// 将原型指向src
 function patchProto(target, src, key) {
     target.__proto__ = src;
 }
@@ -218,6 +290,7 @@ function defineReactive(obj, key) {
         val = obj[key];
     }
 
+    // 定义Dep对象，用于收集依赖
     var dep = new Dep();
 
     var childOb = val && observe(val);
@@ -226,8 +299,11 @@ function defineReactive(obj, key) {
         configurable: true,
         get: function get$$1() {
             var value = getter ? getter.call(obj) : val;
+            // 由于getter是闭包，故外部利用getter来收集依赖，
+            // Dep.target为一个全局变量，存储了当前正在调用getter的 watcher
             if (Dep.target) {
                 dep.depend();
+                // 如果是数组，则调用数组的依赖收集，并监听所有子项
                 if (childOb) {
                     childOb.dep.depend();
                     if (Array.isArray(value)) {
@@ -247,11 +323,13 @@ function defineReactive(obj, key) {
             } else {
                 val = newVal;
             }
+            // 通知之前所以依赖的 watcher
             dep.notify();
         }
     });
 }
 
+// 收集数组的依赖
 function dependArray(value) {
     for (var e, i = 0, l = value.length; i < l; i++) {
         e = value[i];
@@ -262,14 +340,13 @@ function dependArray(value) {
     }
 }
 
-var _createClass$2 = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck$2(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+/**
+ * 监听器
+ */
 
 var Watcher = function () {
     function Watcher(options) {
-        _classCallCheck$2(this, Watcher);
-
+        classCallCheck(this, Watcher);
         var vm = options.vm,
             cb = options.cb,
             expOrFn = options.expOrFn;
@@ -277,11 +354,22 @@ var Watcher = function () {
         this.vm = vm;
         this.expOrFn = expOrFn;
         this.cb = cb;
+
+        this.deps = [];
+        this.newDeps = [];
+        this.depIds = new Set();
+        this.newDepIds = new Set();
+
         this.getter = parsePath(this.expOrFn);
         this.value = this.get();
     }
 
-    _createClass$2(Watcher, [{
+    /**
+     * 更新方法，会调用之前绑定到当前watcher的回调
+     */
+
+
+    createClass(Watcher, [{
         key: 'update',
         value: function update() {
             var value = this.get();
@@ -289,6 +377,11 @@ var Watcher = function () {
             this.value = value;
             this.cb.call(this.vm, value, oldValue);
         }
+
+        /**
+         * 获取当前所 watcher 内容的值，并收集依赖
+         */
+
     }, {
         key: 'get',
         value: function get$$1() {
@@ -299,16 +392,24 @@ var Watcher = function () {
             return value;
         }
     }, {
+        key: 'addDep',
+        value: function addDep(dep) {
+            var id = dep.id;
+            if (!this.newDepIds.has(id)) {
+                this.newDepIds.add(id);
+                this.newDeps.push(dep);
+
+                if (!this.depIds.has(id)) {
+                    dep.addSub(this);
+                }
+            }
+        }
+    }, {
         key: 'teardown',
         value: function teardown() {}
     }]);
-
     return Watcher;
 }();
-
-var _createClass$3 = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck$3(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 /**
  * Vin类
@@ -316,12 +417,12 @@ function _classCallCheck$3(instance, Constructor) { if (!(instance instanceof Co
 
 var Vin = function () {
     function Vin(options) {
-        _classCallCheck$3(this, Vin);
+        classCallCheck(this, Vin);
 
         this.init(options);
     }
 
-    _createClass$3(Vin, [{
+    createClass(Vin, [{
         key: 'init',
         value: function init(options) {
             console.log('init');
@@ -365,7 +466,6 @@ var Vin = function () {
             };
         }
     }]);
-
     return Vin;
 }();
 

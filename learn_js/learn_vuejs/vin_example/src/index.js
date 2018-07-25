@@ -31,3 +31,9 @@ vin.sex = 'girl';
 vin.name = 'my new name is haha';
 vin.myList.push("1231231");
 // vin.myList = ["123"];
+
+
+let i = 0;
+$(".J-test").on('click', function() {
+    vin.name = 'my new name is jiajia ' + i++;
+});
