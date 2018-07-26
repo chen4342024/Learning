@@ -1,4 +1,4 @@
-import { parsePath } from '../util/index'
+import { parsePath, isFunction } from '../util/index'
 import { pushTarget, popTarget } from './dep';
 
 /**
@@ -8,15 +8,25 @@ export default class Watcher {
     constructor(options) {
         let { vm, cb, expOrFn } = options;
         this.vm = vm;
+
         this.expOrFn = expOrFn;
         this.cb = cb;
+        this.isRenderWatcher = isRenderWatcher;
+
+        if (isRenderWatcher) {
+            vm._watcher = this;
+        }
+        vm._watchers.push(this);
 
         this.deps = []
-        this.newDeps = []
+        // this.newDeps = []
         this.depIds = new Set()
-        this.newDepIds = new Set()
-
-        this.getter = parsePath(this.expOrFn);
+        // this.newDepIds = new Set()
+        if (isFunction(this.expOrFn)) {
+            this.getter = this.expOrFn;
+        } else {
+            this.getter = parsePath(this.expOrFn);
+        }
         this.value = this.get();
     }
 
@@ -43,13 +53,10 @@ export default class Watcher {
 
     addDep(dep) {
         const id = dep.id
-        if (!this.newDepIds.has(id)) {
-            this.newDepIds.add(id)
-            this.newDeps.push(dep)
-            
-            if (!this.depIds.has(id)) {
-                dep.addSub(this)
-            }
+        if (!this.depIds.has(id)) {
+            this.depIds.add(id)
+            this.deps.push(dep)
+            dep.addSub(this)
         }
     }
 

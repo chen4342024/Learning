@@ -50,3 +50,7 @@ export function isRealObject(obj) {
     return obj !== null && typeof obj === 'object';
     // return Object.prototype.toString.call(obj) === '[object Object]';
 }
+
+export function isFunction(fn) {
+    return typeof fn === 'function';
+}

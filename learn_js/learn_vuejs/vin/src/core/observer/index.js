@@ -13,7 +13,6 @@ export class Observer {
         this.dep = new Dep();
         def(value, '__ob__', this);
 
-        
         if (Array.isArray(value)) {
             // 数组情况下，需要对push等方法进行监听
             patchProto(value, arrayMethods);

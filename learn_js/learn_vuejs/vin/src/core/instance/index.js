@@ -1,6 +1,7 @@
 import { observe } from '../observer/index'
 import Watcher from '../observer/watcher';
 import { isReserved, noop } from '../util/index'
+import { _update } from './lifecycle'
 
 /**
  * Vin类
@@ -47,6 +48,10 @@ class Vin {
         return function unwatchFn() {
             watcher.teardown();
         }
+    }
+
+    _update() {
+        console.log('_update ');
     }
 }
 

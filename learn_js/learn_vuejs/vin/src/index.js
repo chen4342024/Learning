@@ -1,4 +1,3 @@
-
-import Vin from './core/instance/index'
+import Vin from './platforms/web/entry-runtime-with-complier'
 
 export default Vin;
