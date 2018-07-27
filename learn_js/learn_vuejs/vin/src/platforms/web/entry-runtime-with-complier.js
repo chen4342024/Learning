@@ -5,13 +5,6 @@ import { VNode } from '../../core/vdom/vnode';
 
 
 Vin.prototype.$mount = function(el) {
-    el = el ? query(el) : undefined
-    return mountComponent(this, el);
-}
-
-
-const mount = Vin.prototype.$mount;
-Vin.prototype.$mount = function(el) {
     el = el && query(el);
     const options = this.$options;
     let template = options.template;
@@ -23,9 +16,15 @@ Vin.prototype.$mount = function(el) {
             options.render = compileToFunctions(template, { vm: this });
         }
     }
-    mount.call(this, el);
+    return mountComponent(this, el);
 }
 
+
+/**
+ * 将模板转化成render方法
+ * @param {}} template 模板
+ * @param {*} options 选项
+ */
 function compileToFunctions(template, options) {
     let vm = options.vm;
     return function(data) {

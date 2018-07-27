@@ -28,6 +28,11 @@ var createClass = function () {
   };
 }();
 
+/**
+ * 删除 array
+ * @param {*} arr 
+ * @param {*} item 
+ */
 function remove(arr, item) {
     if (arr.length) {
         var index = arr.indexOf(item);
@@ -65,6 +70,13 @@ function isReserved(str) {
 
 function noop() {}
 
+/**
+ * 定义 对象上的 key，返回的val
+ * @param {*} obj 
+ * @param {*} key 
+ * @param {*} val 
+ * @param {*} enumerable 
+ */
 function def(obj, key, val, enumerable) {
     Object.defineProperty(obj, key, {
         value: val,
@@ -74,11 +86,12 @@ function def(obj, key, val, enumerable) {
     });
 }
 
+// 判断是否是object对象
 function isRealObject(obj) {
     return obj !== null && (typeof obj === 'undefined' ? 'undefined' : _typeof(obj)) === 'object';
-    // return Object.prototype.toString.call(obj) === '[object Object]';
 }
 
+//判断是否是函数
 function isFunction(fn) {
     return typeof fn === 'function';
 }
@@ -362,20 +375,26 @@ var Watcher = function () {
         this.cb = cb;
         this.isRenderWatcher = isRenderWatcher;
 
+        // 如果是用于渲染的watcher，则存起来
         if (isRenderWatcher) {
             vm._watcher = this;
         }
         vm._watchers.push(this);
 
+        // 用于保存watcher所在的依赖
         this.deps = [];
         // this.newDeps = []
         this.depIds = new Set();
         // this.newDepIds = new Set()
+
+        // 初始化getter
         if (isFunction(this.expOrFn)) {
             this.getter = this.expOrFn;
         } else {
             this.getter = parsePath(this.expOrFn);
         }
+
+        // 保存下value，这里会触发getter，搜集依赖
         this.value = this.get();
     }
 
@@ -406,6 +425,13 @@ var Watcher = function () {
             popTarget();
             return value;
         }
+
+        /**
+         * 添加依赖，因为更多时候是删除watcher ，然后要到 所有的 dep里面把当前watcher删掉
+         * 所以在这里保存下 dep
+         * @param {*} dep 
+         */
+
     }, {
         key: 'addDep',
         value: function addDep(dep) {
@@ -423,20 +449,23 @@ var Watcher = function () {
     return Watcher;
 }();
 
+// 为原型增加生命周期相关的函数
 function lifecycleMixin(Vin) {
 
+    // 更新虚拟dom结构
     Vin.prototype._update = function (vnode) {
         var vm = this;
         var prevVnode = vm._vnode;
         vm._vnode = vnode;
 
         //patch, 测试，这里不做处理，直接返回一整个html替换
+        // 这里应该是对比 vnode 和 prevVnode ，然后更新dom结构
         vm.$el.innerHTML = vnode.render();
     };
 }
 
 /**
- * 
+ * 挂在组件
  * @param {*} el 
  */
 function mountComponent(vm, el) {
@@ -444,10 +473,13 @@ function mountComponent(vm, el) {
 
     vm.$el = el;
     vm.$options.render;
+
+    // 更新组件
     var updateComponent = function updateComponent() {
         vm._update(vm._render());
     };
 
+    //创建渲染的 watcher
     new Watcher({
         vm: vm,
         expOrFn: updateComponent,
@@ -458,15 +490,22 @@ function mountComponent(vm, el) {
     return vm;
 }
 
+/**
+ * 为Vin 添加渲染相关的原型方法
+ * @param {*} Vin 
+ */
 function renderMixin(Vin) {
-    Vin.prototype._render = function () {
-        var vm = this;
-        var render = vm.$options.render;
 
+  /**
+   * 渲染
+   */
+  Vin.prototype._render = function () {
+    var vm = this;
+    var render = vm.$options.render;
 
-        var vnode = render.call(vm);
-        return vnode;
-    };
+    var vnode = render.call(vm);
+    return vnode;
+  };
 }
 
 /**
@@ -480,6 +519,12 @@ var Vin = function () {
         this.init(options);
     }
 
+    /**
+     * 初始化
+     * @param {*} options 
+     */
+
+
     createClass(Vin, [{
         key: 'init',
         value: function init(options) {
@@ -487,15 +532,23 @@ var Vin = function () {
             this._watchers = [];
             this.$options = options;
 
+            // 监听数据
             this.initData();
 
+            // 监听watcher
             var watchers = this.$options.watch;
             this.initWatch(this, watchers);
 
+            // 调用 mount
             if (this.$options.el) {
                 this.$mount(this.$options.el);
             }
         }
+
+        /**
+         * 初始化数据
+         */
+
     }, {
         key: 'initData',
         value: function initData() {
@@ -512,6 +565,13 @@ var Vin = function () {
             }
             observe(data);
         }
+
+        /**
+         * 初始化 订阅者
+         * @param {*} vm 
+         * @param {*} watch 
+         */
+
     }, {
         key: 'initWatch',
         value: function initWatch(vm, watch) {
@@ -520,6 +580,13 @@ var Vin = function () {
                 createWatcher(vm, key, handler);
             }
         }
+
+        /**
+         * 创建 watcher
+         * @param {*} expOrFn 
+         * @param {*} cb 
+         */
+
     }, {
         key: '$watch',
         value: function $watch(expOrFn, cb) {
@@ -533,7 +600,12 @@ var Vin = function () {
     return Vin;
 }();
 
+// 生命周期
+
+
 lifecycleMixin(Vin);
+
+// 渲染相关
 renderMixin(Vin);
 
 var sharedPropertyDefinition = {
@@ -541,9 +613,9 @@ var sharedPropertyDefinition = {
     configurable: true,
     get: noop,
     set: noop
-};
 
-function proxy(target, sourceKey, key) {
+    // 代理
+};function proxy(target, sourceKey, key) {
     sharedPropertyDefinition.get = function proxyGetter() {
         return this[sourceKey][key];
     };
@@ -553,6 +625,7 @@ function proxy(target, sourceKey, key) {
     Object.defineProperty(target, key, sharedPropertyDefinition);
 }
 
+//创建 watcher
 function createWatcher(vm, expOrFn, handler) {
     return vm.$watch(expOrFn, handler);
 }
@@ -587,11 +660,13 @@ function getOuterHTML(el) {
     }
 }
 
+// 虚拟 Dom 节点
 var VNode = function () {
     function VNode(options) {
         classCallCheck(this, VNode);
         var template = options.template,
             vm = options.vm;
+        // 简单处理直接保存template
 
         this.template = template;
         this.vm = vm;
@@ -606,6 +681,7 @@ var VNode = function () {
         value: function render() {
             var _this = this;
 
+            // 简单处理,直接显示
             var keys = Object.keys(this.data);
             keys.forEach(function (item) {
                 _this.template += item + " : " + _this.data[item] + "<br/>";
@@ -616,12 +692,6 @@ var VNode = function () {
     return VNode;
 }();
 
-Vin.prototype.$mount = function (el) {
-    el = el ? query(el) : undefined;
-    return mountComponent(this, el);
-};
-
-var mount = Vin.prototype.$mount;
 Vin.prototype.$mount = function (el) {
     el = el && query(el);
     var options = this.$options;
@@ -634,9 +704,14 @@ Vin.prototype.$mount = function (el) {
             options.render = compileToFunctions(template, { vm: this });
         }
     }
-    mount.call(this, el);
+    return mountComponent(this, el);
 };
 
+/**
+ * 将模板转化成render方法
+ * @param {}} template 模板
+ * @param {*} options 选项
+ */
 function compileToFunctions(template, options) {
     var vm = options.vm;
     return function (data) {

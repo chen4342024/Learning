@@ -11,27 +11,37 @@ class Vin {
         this.init(options);
     }
 
+    /**
+     * 初始化
+     * @param {*} options 
+     */
     init(options) {
         console.log('init');
         this._watchers = [];
         this.$options = options;
 
+        // 监听数据
         this.initData();
 
+        // 监听watcher
         let watchers = this.$options.watch;
         this.initWatch(this, watchers);
 
+        // 调用 mount
         if (this.$options.el) {
             this.$mount(this.$options.el)
         }
     }
 
+    /**
+     * 初始化数据
+     */
     initData() {
         let data = this.$options.data;
         const vm = this;
         vm._data = data;
         const keys = Object.keys(data)
-        let i = keys.length
+        let i = keys.length;
         while (i--) {
             const key = keys[i]
             if (!isReserved(key)) {
@@ -41,6 +51,11 @@ class Vin {
         observe(data);
     }
 
+    /**
+     * 初始化 订阅者
+     * @param {*} vm 
+     * @param {*} watch 
+     */
     initWatch(vm, watch) {
         for (let key in watch) {
             const handler = watch[key];
@@ -48,6 +63,11 @@ class Vin {
         }
     }
 
+    /**
+     * 创建 watcher
+     * @param {*} expOrFn 
+     * @param {*} cb 
+     */
     $watch(expOrFn, cb) {
         let vm = this;
         const watcher = new Watcher({ vm: vm, cb: cb, expOrFn: expOrFn });
@@ -57,8 +77,13 @@ class Vin {
     }
 }
 
+// 生命周期
 lifecycleMixin(Vin);
+
+// 渲染相关
 renderMixin(Vin);
+
+
 
 const sharedPropertyDefinition = {
     enumerable: true,
@@ -67,6 +92,7 @@ const sharedPropertyDefinition = {
     set: noop
 }
 
+// 代理
 export function proxy(target, sourceKey, key) {
     sharedPropertyDefinition.get = function proxyGetter() {
         return this[sourceKey][key]
@@ -78,6 +104,7 @@ export function proxy(target, sourceKey, key) {
 }
 
 
+//创建 watcher
 function createWatcher(vm, expOrFn, handler) {
     return vm.$watch(expOrFn, handler)
 }

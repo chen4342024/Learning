@@ -38,5 +38,5 @@ $(".J-test").on('click', function() {
     vin.name = 'my new name is jiajia ' + i++;
     vin.sex = i % 2 > 0 ? 'man' : 'girl';
     vin.age = 18 + i;
-    vin.myList.push(i);
+    vin.myList.push(` ${i} `);
 });

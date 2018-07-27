@@ -1,3 +1,8 @@
+/**
+ * 删除 array
+ * @param {*} arr 
+ * @param {*} item 
+ */
 export function remove(arr, item) {
     if (arr.length) {
         const index = arr.indexOf(item)
@@ -37,6 +42,13 @@ export function isReserved(str) {
 export function noop() {}
 
 
+/**
+ * 定义 对象上的 key，返回的val
+ * @param {*} obj 
+ * @param {*} key 
+ * @param {*} val 
+ * @param {*} enumerable 
+ */
 export function def(obj, key, val, enumerable) {
     Object.defineProperty(obj, key, {
         value: val,
@@ -46,11 +58,12 @@ export function def(obj, key, val, enumerable) {
     });
 }
 
+// 判断是否是object对象
 export function isRealObject(obj) {
     return obj !== null && typeof obj === 'object';
-    // return Object.prototype.toString.call(obj) === '[object Object]';
 }
 
+//判断是否是函数
 export function isFunction(fn) {
     return typeof fn === 'function';
 }
