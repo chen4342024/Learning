@@ -6,7 +6,7 @@ import { pushTarget, popTarget } from './dep';
  */
 export default class Watcher {
     constructor(options) {
-        let { vm, cb, expOrFn } = options;
+        let { vm, cb, expOrFn, isRenderWatcher } = options;
         this.vm = vm;
 
         this.expOrFn = expOrFn;

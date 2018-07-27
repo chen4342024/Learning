@@ -2,11 +2,13 @@ import Watcher from "../observer/watcher";
 import { noop } from "../util";
 
 export function lifecycleMixin(Vin) {
+    
     Vin.prototype._update = function(vnode) {
+        const vm = this;
         const prevVnode = vm._vnode;
         vm._vnode = vnode;
-        
-        //patch
+
+        //patch, 测试，这里不做处理，直接返回一整个html替换
         vm.$el.innerHTML = vnode.render();
 
     }

@@ -1,4 +1,4 @@
-import Vin from './core/instance/index'
+import Vin from '../../core/instance/index'
 import { query, getOuterHTML } from './utils/index'
 import { mountComponent } from '../../core/instance/lifecycle'
 import { VNode } from '../../core/vdom/vnode';
@@ -10,7 +10,7 @@ Vin.prototype.$mount = function(el) {
 }
 
 
-const mount = Vue.prototype.$mount;
+const mount = Vin.prototype.$mount;
 Vin.prototype.$mount = function(el) {
     el = el && query(el);
     const options = this.$options;
@@ -20,17 +20,18 @@ Vin.prototype.$mount = function(el) {
     }
     if (!options.render) {
         if (template) {
-            options.render = compileToFunctions(template);
+            options.render = compileToFunctions(template, { vm: this });
         }
     }
     mount.call(this, el);
 }
 
-function compileToFunctions(template) {
+function compileToFunctions(template, options) {
+    let vm = options.vm;
     return function(data) {
         return new VNode({
             template: template,
-            data: data
+            vm: vm
         });
     }
 }

@@ -1,8 +1,8 @@
 import { observe } from '../observer/index'
 import Watcher from '../observer/watcher';
 import { isReserved, noop } from '../util/index'
-import { _update } from './lifecycle'
-
+import { lifecycleMixin } from "./lifecycle";
+import { renderMixin } from './render';
 /**
  * Vin类
  */
@@ -13,11 +13,17 @@ class Vin {
 
     init(options) {
         console.log('init');
+        this._watchers = [];
         this.$options = options;
+
         this.initData();
 
         let watchers = this.$options.watch;
         this.initWatch(this, watchers);
+
+        if (this.$options.el) {
+            this.$mount(this.$options.el)
+        }
     }
 
     initData() {
@@ -49,11 +55,10 @@ class Vin {
             watcher.teardown();
         }
     }
-
-    _update() {
-        console.log('_update ');
-    }
 }
+
+lifecycleMixin(Vin);
+renderMixin(Vin);
 
 const sharedPropertyDefinition = {
     enumerable: true,

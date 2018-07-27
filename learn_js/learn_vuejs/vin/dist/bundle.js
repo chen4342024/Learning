@@ -79,6 +79,10 @@ function isRealObject(obj) {
     // return Object.prototype.toString.call(obj) === '[object Object]';
 }
 
+function isFunction(fn) {
+    return typeof fn === 'function';
+}
+
 var uid = 0;
 
 /**
@@ -349,18 +353,29 @@ var Watcher = function () {
         classCallCheck(this, Watcher);
         var vm = options.vm,
             cb = options.cb,
-            expOrFn = options.expOrFn;
+            expOrFn = options.expOrFn,
+            isRenderWatcher = options.isRenderWatcher;
 
         this.vm = vm;
+
         this.expOrFn = expOrFn;
         this.cb = cb;
+        this.isRenderWatcher = isRenderWatcher;
+
+        if (isRenderWatcher) {
+            vm._watcher = this;
+        }
+        vm._watchers.push(this);
 
         this.deps = [];
-        this.newDeps = [];
+        // this.newDeps = []
         this.depIds = new Set();
-        this.newDepIds = new Set();
-
-        this.getter = parsePath(this.expOrFn);
+        // this.newDepIds = new Set()
+        if (isFunction(this.expOrFn)) {
+            this.getter = this.expOrFn;
+        } else {
+            this.getter = parsePath(this.expOrFn);
+        }
         this.value = this.get();
     }
 
@@ -395,13 +410,10 @@ var Watcher = function () {
         key: 'addDep',
         value: function addDep(dep) {
             var id = dep.id;
-            if (!this.newDepIds.has(id)) {
-                this.newDepIds.add(id);
-                this.newDeps.push(dep);
-
-                if (!this.depIds.has(id)) {
-                    dep.addSub(this);
-                }
+            if (!this.depIds.has(id)) {
+                this.depIds.add(id);
+                this.deps.push(dep);
+                dep.addSub(this);
             }
         }
     }, {
@@ -410,6 +422,52 @@ var Watcher = function () {
     }]);
     return Watcher;
 }();
+
+function lifecycleMixin(Vin) {
+
+    Vin.prototype._update = function (vnode) {
+        var vm = this;
+        var prevVnode = vm._vnode;
+        vm._vnode = vnode;
+
+        //patch, 测试，这里不做处理，直接返回一整个html替换
+        vm.$el.innerHTML = vnode.render();
+    };
+}
+
+/**
+ * 
+ * @param {*} el 
+ */
+function mountComponent(vm, el) {
+    console.log("mountComponent");
+
+    vm.$el = el;
+    vm.$options.render;
+    var updateComponent = function updateComponent() {
+        vm._update(vm._render());
+    };
+
+    new Watcher({
+        vm: vm,
+        expOrFn: updateComponent,
+        cb: noop,
+        isRenderWatcher: true
+    });
+
+    return vm;
+}
+
+function renderMixin(Vin) {
+    Vin.prototype._render = function () {
+        var vm = this;
+        var render = vm.$options.render;
+
+
+        var vnode = render.call(vm);
+        return vnode;
+    };
+}
 
 /**
  * Vin类
@@ -426,11 +484,17 @@ var Vin = function () {
         key: 'init',
         value: function init(options) {
             console.log('init');
+            this._watchers = [];
             this.$options = options;
+
             this.initData();
 
             var watchers = this.$options.watch;
             this.initWatch(this, watchers);
+
+            if (this.$options.el) {
+                this.$mount(this.$options.el);
+            }
         }
     }, {
         key: 'initData',
@@ -469,6 +533,9 @@ var Vin = function () {
     return Vin;
 }();
 
+lifecycleMixin(Vin);
+renderMixin(Vin);
+
 var sharedPropertyDefinition = {
     enumerable: true,
     configurable: true,
@@ -488,6 +555,96 @@ function proxy(target, sourceKey, key) {
 
 function createWatcher(vm, expOrFn, handler) {
     return vm.$watch(expOrFn, handler);
+}
+
+/**
+ * Query an element selector if it's not an element already.
+ */
+function query(el) {
+    if (typeof el === 'string') {
+        var selected = document.querySelector(el);
+        if (!selected) {
+            process.env.NODE_ENV !== 'production' && warn('Cannot find element: ' + el);
+            return document.createElement('div');
+        }
+        return selected;
+    } else {
+        return el;
+    }
+}
+
+/**
+ * Get outerHTML of elements, taking care
+ * of SVG elements in IE as well.
+ */
+function getOuterHTML(el) {
+    if (el.outerHTML) {
+        return el.outerHTML;
+    } else {
+        var container = document.createElement('div');
+        container.appendChild(el.cloneNode(true));
+        return container.innerHTML;
+    }
+}
+
+var VNode = function () {
+    function VNode(options) {
+        classCallCheck(this, VNode);
+        var template = options.template,
+            vm = options.vm;
+
+        this.template = template;
+        this.vm = vm;
+        this.data = vm.$options.data;
+    }
+
+    //用于测试用
+
+
+    createClass(VNode, [{
+        key: "render",
+        value: function render() {
+            var _this = this;
+
+            var keys = Object.keys(this.data);
+            keys.forEach(function (item) {
+                _this.template += item + " : " + _this.data[item] + "<br/>";
+            });
+            return this.template;
+        }
+    }]);
+    return VNode;
+}();
+
+Vin.prototype.$mount = function (el) {
+    el = el ? query(el) : undefined;
+    return mountComponent(this, el);
+};
+
+var mount = Vin.prototype.$mount;
+Vin.prototype.$mount = function (el) {
+    el = el && query(el);
+    var options = this.$options;
+    var template = options.template;
+    if (!template && el) {
+        template = getOuterHTML(el);
+    }
+    if (!options.render) {
+        if (template) {
+            options.render = compileToFunctions(template, { vm: this });
+        }
+    }
+    mount.call(this, el);
+};
+
+function compileToFunctions(template, options) {
+    var vm = options.vm;
+    return function (data) {
+        return new VNode({
+            template: template,
+            vm: vm
+        });
+    };
 }
 
 export default Vin;
