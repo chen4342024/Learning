@@ -3,13 +3,21 @@
     <div>
       <app-logo/>
       <h1 class="title">
-        这个是测试
+        这个是about
       </h1>
       <h2 class="subtitle">
         这个是子标题
       </h2>
-      <router-link to="/about">Go to about</router-link>
+      <router-link to="/">Go to index</router-link>
       <div class="links">
+        <a
+          href="https://nuxtjs.org/"
+          target="_blank"
+          class="button--green">Documentation</a>
+        <a
+          href="https://github.com/nuxt/nuxt.js"
+          target="_blank"
+          class="button--grey">GitHub</a>
       </div>
     </div>
   </section>
