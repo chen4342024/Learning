@@ -1,0 +1,17 @@
+{
+    "name": "koa_demo",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "dependencies": {
+        "koa": "^2.5.2",
+        "nodemon": "^1.18.3"
+    },
+    "devDependencies": {},
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "start": "nodemon app.js"
+    },
+    "author": "",
+    "license": "ISC"
+}
