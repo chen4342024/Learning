@@ -13,7 +13,6 @@ app.use(async (ctx, next) => {
 
 app.use(async (ctx, next) => {
     console.log(ctx.fuck);
-    throw new Error("test error ");
     next();
 })
 
@@ -31,7 +30,7 @@ app.use(async ctx => {
 });
 
 app.on('error', err => {
-    log.error('server error', err);
+    console.error('server error', err);
 })
 
 app.listen(3000);
