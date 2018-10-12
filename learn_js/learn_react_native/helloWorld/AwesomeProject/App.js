@@ -16,7 +16,8 @@ import {
   FlatList
 } from 'react-native';
 import { createBottomTabNavigator, BottomTabBar } from 'react-navigation';
-import moviesJson from './app/json/MoviesExample.json';
+// import moviesJson from './app/json/MoviesExample.json';
+import * as movieService from './src/api/movie'
 
 const TabBarComponent = (props) => (<View><Text>123123</Text></View>);
 
@@ -39,13 +40,14 @@ class App extends Component<Props> {
   }
 
   fetchData() {
-    setTimeout(() => {
+    console.log('fetch data');
+    movieService.getList().then((res)=>{
       this.setState({
-        data: this.state.data.concat(moviesJson.movies),
+        data: this.state.data.concat(res.movies),
         loaded: true,
         refreshing: false
       });
-    }, 2000);
+    })
   }
 
   renderLoadingView() {
