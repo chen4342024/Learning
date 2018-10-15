@@ -8,7 +8,7 @@ import {
   FlatList,
   Button
 } from 'react-native';
-import LogoTitle from './LogoTitle';
+import LogoTitle from '../components/LogoTitle';
 
 class HomeScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {

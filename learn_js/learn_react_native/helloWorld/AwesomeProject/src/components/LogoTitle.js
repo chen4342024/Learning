@@ -6,7 +6,7 @@ class LogoTitle extends React.Component {
     return (
       <View style={styles.title}>
         <Image
-          source={require('./assets/logo.png')}
+          source={require('../assets/logo.png')}
           style={{ width: 30, height: 30 }}
         />
         <Text>test</Text>

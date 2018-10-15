@@ -9,7 +9,7 @@ import {
   Button
 } from 'react-native';
 
-import LogoTitle from './LogoTitle';
+import LogoTitle from '../components/LogoTitle';
 
 class DetailScreen extends React.Component {
   static navigationOptions = ({ navigation, navigationOptions }) => {
