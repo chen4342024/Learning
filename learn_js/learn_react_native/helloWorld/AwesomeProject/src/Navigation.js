@@ -8,10 +8,11 @@ import HomeScreen from './pages/HomeScreen'
 import DetailScreen from './pages/DetailScreen'
 import ModalScreen from './pages/ModalScreen'
 import App from './pages/AppScreen'
+import AnimatedScreen from './pages/AnimatedScreen'
 
 const TabBarComponent = props => (
     <View>
-        <Text>123123</Text>
+        <Text> 123123 </Text>{' '}
     </View>
 )
 
@@ -36,7 +37,8 @@ const MainStack = createStackNavigator(
         HomeScreen: HomeScreen,
         DetailScreen: {
             screen: DetailScreen
-        }
+        },
+        AnimatedScreen: AnimatedScreen
     },
     options
 )
@@ -54,6 +56,8 @@ MainStack.navigationOptions = ({ navigation }) => {
 const TabsStack = createBottomTabNavigator({
     App: App,
     Main: MainStack
+},{
+    initialRouteName: 'Main',
 })
 
 const RootStack = createStackNavigator(
