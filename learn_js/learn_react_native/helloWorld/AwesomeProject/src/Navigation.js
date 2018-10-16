@@ -16,9 +16,9 @@ const TabBarComponent = props => (
 )
 
 let options = {
-    tabBarButtonComponent: props => (
-        <TabBarComponent {...props} style={{ borderTopColor: '#605F60' }} />
-    ),
+    // tabBarButtonComponent: props => (
+    //     <TabBarComponent {...props} style={{ borderTopColor: '#605F60' }} />
+    // ),
     initialRouteName: 'HomeScreen',
     navigationOptions: {
         headerStyle: {

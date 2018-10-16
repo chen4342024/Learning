@@ -25,11 +25,12 @@ function get(url, params, options) {
  * 将对象转成 a=1&b=2的形式
  * @param obj 对象
  */
-function obj2String(obj, arr = [], idx = 0) {
+function obj2String(obj) {
+    let params = '';
     for (let item in obj) {
-        arr[idx++] = [item, obj[item]]
+        params = params + `&${item}=${obj[item]}`;
     }
-    return new URLSearchParams(arr).toString()
+    return params;
 }
 
 function request(url, options) {
