@@ -1,0 +1,71 @@
+@import "./config.scss";
+
+
+// 定义通用的按钮样式
+// .cat-btn 表示按钮
+// .ghost 表示为幽灵按钮👻
+// 有三种大小 ， 分别是  .medium ， .small ， .mini 。分别对应的高度为 ： 1rem , 0.76rem , 0.66rem
+// .round 表示是圆角按钮
+.cat-btn {
+    text-align: center;
+    background: $btnColor;
+    color: #fff;
+    font-size: 0.32rem;
+    box-sizing: border-box;
+    outline: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: normal;
+    text-decoration: none;
+
+    &.disabled,
+    &[disabled] {
+        color: #fff;
+        background: #DADADA;
+    }
+
+    &.ghost {
+        background: #fff;
+        color: $btnColor;
+        border: 1px solid $btnColor;
+
+        &.disabled {
+            color: #999;
+            border: 1px solid #999;
+        }
+    }
+
+    &.medium {
+        height: 1rem;
+        width: 100%;
+
+        &.round {
+            border-radius: 1rem;
+        }
+    }
+
+    &.small {
+        height: 0.76rem;
+        display: inline-flex;
+        padding-left: 0.24rem;
+        padding-right: 0.24rem;
+
+        &.round {
+            border-radius: 0.76rem;
+        }
+    }
+
+    &.mini {
+        height: 0.6rem;
+        font-size: 0.28rem;
+        display: inline-flex;
+        padding-left: 0.24rem;
+        padding-right: 0.24rem;
+
+        &.round {
+            border-radius: 0.6rem;
+        }
+    }
+
+}
