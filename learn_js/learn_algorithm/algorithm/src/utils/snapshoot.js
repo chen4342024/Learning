@@ -12,7 +12,7 @@ export default class Snapshoot {
         this.list.push(cloneItem);
     }
 
-    play(callback, delay = 1000) {
+    play(callback, delay = 800) {
         this.step = 0;
 
         let loop = () => {

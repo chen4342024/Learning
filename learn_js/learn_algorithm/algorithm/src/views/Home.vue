@@ -68,7 +68,8 @@ export default {
             return this.swapIndexs.indexOf(index) != -1;
         },
 
-        // 冒泡排序，最慢的排序算法之一
+        // 冒泡排序，最慢的排序算法之一，
+        // 最大的值一步一步往上冒泡
         bubbleSort(array) {
             for (let i = array.length - 1; i >= 1; i--) {
                 for (let j = 0; j <= i; j++) {
@@ -88,23 +89,29 @@ export default {
             });
         },
 
+        // 选择排序从开头开始，找出最小的值，放在第一个位置
+        // 有点类似打扑克拍的时候，抽取每一张最小的放在最左边
         selectSort(array) {
-            // for (let i = array.length - 1; i >= 1; i--) {
-            //     for (let j = 0; j <= i; j++) {
-            //         if (array[j] > array[j + 1]) {
-            //             swap(array, j, j + 1);
-            //         }
-            //         this.snapshoot.add({
-            //             list: array,
-            //             swap: [j, j + 1]
-            //         });
-            //     }
-            //     log(array);
-            // }
-            // this.snapshoot.add({
-            //     list: array,
-            //     swap: []
-            // });
+            for (let i = 0; i < array.length - 1; i++) {
+                let minIndex = i;
+                let min = array[i];
+                for (let j = i + 1; j < array.length; j++) {
+                    this.snapshoot.add({
+                        list: array,
+                        swap: [i, j]
+                    });
+                    if (array[j] < min) {
+                        min = array[j];
+                        minIndex = j;
+                    }
+                }
+                swap(array, i, minIndex);
+                this.snapshoot.add({
+                    list: array,
+                    swap: [i, minIndex]
+                });
+                log(array);
+            }
         }
     }
 };
