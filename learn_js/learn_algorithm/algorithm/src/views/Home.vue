@@ -35,7 +35,6 @@
 <script>
 import { makeData, swap, log, toString } from "../utils/util.js";
 import Snapshoot from "../utils/snapshoot.js";
-import { setTimeout } from "core-js";
 export default {
     name: "home",
     components: {},
