@@ -6,8 +6,10 @@ export default class Snapshoot {
 
     add(item = {}) {
         let cloneItem = {
-            list: [...item.list],
-            swapIndexs: [...item.swap]
+            list: [...(item.list || [])],
+            swapIndexs: [...(item.swap || [])],
+            emptyIndexs: [...(item.empty || [])],
+            temp: [...(item.temp || [])]
         };
         this.list.push(cloneItem);
     }

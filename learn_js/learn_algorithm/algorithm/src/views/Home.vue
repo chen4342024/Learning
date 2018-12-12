@@ -2,11 +2,11 @@
     <div class="home">
         <h3>排序</h3>
         <div class="list-complete-container">
-            <transition-group name="list-complete" class tag="p">
+            <transition-group name="list-complete" class="list-complete-group" tag="p">
                 <span
                     v-for="(item,index) in testArray"
                     :key="item"
-                    :class="`list-complete-item ${isActive(index) ? 'active' : ''}`"
+                    :class="`list-complete-item ${isActive(index) ? 'active' : ''} ${ isEmpty(index) ? 'empty' : ''}`"
                     :style="{ height: item + 20 + 'px'}"
                 >{{ item }}</span>
             </transition-group>
@@ -18,6 +18,7 @@
         <div class="btn-container">
             <span class="cat-btn ghost medium" @click="handleCallSort(0)">冒泡排序</span>
             <span class="cat-btn ghost medium" @click="handleCallSort(1)">选择排序</span>
+            <span class="cat-btn ghost medium" @click="handleCallSort(2)">插入排序</span>
         </div>
     </div>
 </template>
@@ -50,6 +51,7 @@ export default {
             this.snapshoot.play(item => {
                 this.testArray = item.list;
                 this.swapIndexs = item.swapIndexs;
+                this.emptyIndexs = item.emptyIndexs;
             });
         },
 
@@ -61,11 +63,18 @@ export default {
                 case 1:
                     this.selectSort(testArray);
                     break;
+                case 2:
+                    this.insertSort(testArray);
+                    break;
             }
         },
 
         isActive(index) {
             return this.swapIndexs.indexOf(index) != -1;
+        },
+
+        isEmpty(index) {
+            return this.emptyIndexs.indexOf(index) != -1;
         },
 
         // 冒泡排序，最慢的排序算法之一，
@@ -112,6 +121,37 @@ export default {
                 });
                 log(array);
             }
+        },
+
+        // 插入排序
+        insertSort(array) {
+            for (let i = 0; i < array.length; i++) {
+                let temp = array[i];
+
+                let j = i;
+                while (j > 0 && array[j - 1] > temp) {
+                    // 这里-1 可以不必要的
+                    array[j] = array[j - 1];
+
+                    // 记录
+                    let prev = array[j - 1];
+                    array[j - 1] = temp;
+                    this.snapshoot.add({
+                        list: array,
+                        swap: [j, j - 1],
+                        empty: [j - 1]
+                    });
+                    array[j - 1] = prev;
+                    // 记录 end
+
+                    j--;
+                }
+                array[j] = temp;
+                this.snapshoot.add({
+                    list: array,
+                    swap: [i]
+                });
+            }
         }
     }
 };
@@ -137,6 +177,9 @@ h3 {
     padding: 0.3rem;
 }
 
+.list-complete-group {
+}
+
 .list-complete-item {
     transition: all 0.5s;
     display: inline-block;
@@ -153,6 +196,10 @@ h3 {
 
 .list-complete-item.active {
     background: #008100;
+}
+.list-complete-item.empty {
+    // opacity: 0;
+    vertical-align: top;
 }
 
 .list-complete-enter, .list-complete-leave-to
