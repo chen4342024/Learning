@@ -32,7 +32,7 @@ export function makeData(count, range) {
 }
 
 export function log(array) {
-    console.log(toString(array));
+    // console.log(toString(array));
 }
 
 let _uniqId = 0;

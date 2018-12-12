@@ -12,13 +12,22 @@
             </transition-group>
         </div>
         <div class="result-container">
-            <p>排序前：{{beforeSort}}</p>
-            <p>排序后：{{afterSort}}</p>
+            <div v-if="measureTime">
+                <p>排序时间 :</p>
+                <p>冒泡 ：{{spendTime[0]}}</p>
+                <p>选择 ：{{spendTime[1]}}</p>
+                <p>插入 ：{{spendTime[2]}}</p>
+            </div>
+            <div v-else>
+                <p>排序前：{{beforeSort}}</p>
+                <p>排序后：{{afterSort}}</p>
+            </div>
         </div>
         <div class="btn-container">
             <span class="cat-btn ghost medium" @click="handleCallSort(0)">冒泡排序</span>
             <span class="cat-btn ghost medium" @click="handleCallSort(1)">选择排序</span>
             <span class="cat-btn ghost medium" @click="handleCallSort(2)">插入排序</span>
+            <span class="cat-btn ghost medium" @click="handleTestingTime(2)">测量排序顺序</span>
         </div>
     </div>
 </template>
@@ -26,6 +35,7 @@
 <script>
 import { makeData, swap, log, toString } from "../utils/util.js";
 import Snapshoot from "../utils/snapshoot.js";
+import { setTimeout } from "core-js";
 export default {
     name: "home",
     components: {},
@@ -33,7 +43,9 @@ export default {
         return {
             testArray: [],
             beforeSort: "",
-            afterSort: ""
+            afterSort: "",
+            measureTime: false,
+            spendTime: []
         };
     },
 
@@ -41,9 +53,13 @@ export default {
 
     methods: {
         handleCallSort(index) {
+            this.measureTime = false;
+            if (this.snapshoot) {
+                this.snapshoot.destory();
+            }
+            this.snapshoot = new Snapshoot();
             let testArray = makeData(10, 100);
             // let testArray = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-            this.snapshoot = new Snapshoot();
             // let testArray = [9, 8, 7, 6, 5, 4, 3, 2, 1];
             this.beforeSort = toString(testArray);
             this.sort(index, testArray);
@@ -53,6 +69,22 @@ export default {
                 this.swapIndexs = item.swapIndexs;
                 this.emptyIndexs = item.emptyIndexs;
             });
+        },
+
+        handleTestingTime() {
+            this.measureTime = true;
+            this.snapshoot = new Snapshoot();
+            let testArray = makeData(500, 10000);
+            this.spendTime = [];
+            for (let i = 0; i < 3; i++) {
+                let cloneTestArray = [...testArray];
+
+                let startTime = new Date().getTime();
+                this.sort(i, cloneTestArray);
+                let endTime = new Date().getTime();
+
+                this.spendTime[i] = `${endTime - startTime}ms`;
+            }
         },
 
         sort(index, testArray) {
@@ -81,14 +113,19 @@ export default {
         // 最大的值一步一步往上冒泡
         bubbleSort(array) {
             for (let i = array.length - 1; i >= 1; i--) {
+                let hasSwap = false;
                 for (let j = 0; j <= i; j++) {
                     if (array[j] > array[j + 1]) {
                         swap(array, j, j + 1);
+                        hasSwap = true;
                     }
                     this.snapshoot.add({
                         list: array,
                         swap: [j, j + 1]
                     });
+                }
+                if (!hasSwap) {
+                    break;
                 }
                 log(array);
             }
