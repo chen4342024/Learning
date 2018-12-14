@@ -58,12 +58,13 @@ export default {
             }
             this.snapshoot = new Snapshoot();
             let testArray = makeData(10, 100);
-            // let testArray = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+            // let testArray = [3, 1, 5, 2, 4];
             // let testArray = [9, 8, 7, 6, 5, 4, 3, 2, 1];
             this.beforeSort = toString(testArray);
             this.sort(index, testArray);
             this.afterSort = toString(testArray);
             this.snapshoot.play(item => {
+                console.log(this.testArray.toString());
                 this.testArray = item.list;
                 this.swapIndexs = item.swapIndexs;
                 this.emptyIndexs = item.emptyIndexs;
@@ -166,7 +167,6 @@ export default {
 
                 let j = i;
                 while (j > 0 && array[j - 1] > temp) {
-                    // 这里-1 可以不必要的
                     array[j] = array[j - 1];
 
                     // 记录
