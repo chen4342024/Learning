@@ -24,10 +24,10 @@
             </div>
         </div>
         <div class="btn-container">
-            <span class="cat-btn ghost medium" @click="handleCallSort(0)">冒泡排序</span>
-            <span class="cat-btn ghost medium" @click="handleCallSort(1)">选择排序</span>
-            <span class="cat-btn ghost medium" @click="handleCallSort(2)">插入排序</span>
-            <span class="cat-btn ghost medium" @click="handleTestingTime(2)">测量排序顺序</span>
+            <span class="cat-btn ghost medium" v-if="isShow('bubble')" @click="handleCallSort(0)">冒泡排序</span>
+            <span class="cat-btn ghost medium" v-if="isShow('select')" @click="handleCallSort(1)">选择排序</span>
+            <span class="cat-btn ghost medium" v-if="isShow('insert')" @click="handleCallSort(2)">插入排序</span>
+            <span class="cat-btn ghost medium" v-if="isShow('all')" @click="handleTestingTime(2)">测量排序顺序</span>
         </div>
     </div>
 </template>
@@ -48,7 +48,9 @@ export default {
         };
     },
 
-    created() {},
+    created() {
+        this.showKey = this.$route.query.key || "all";
+    },
 
     methods: {
         handleCallSort(index) {
@@ -188,6 +190,10 @@ export default {
                     swap: [i]
                 });
             }
+        },
+
+        isShow(key) {
+            return this.showKey === key || this.showKey === "all";
         }
     }
 };
