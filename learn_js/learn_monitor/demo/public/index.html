@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <script>
+        // 不兼容 performance.timing 的浏览器
+        (function() {
+            window.pageStartTime = Date.now();
+            var raf = (function() {
+                return function(callback) {
+                        window.setTimeout(callback, 0);
+                    };
+            })();
+            raf(function() {
+                window.firstPaintEndRfa = Date.now();
+                console.log('init rfa ' + (window.firstPaintEndRfa - window.performance.timing.navigationStart))
+            })
+        })(window)
+    </script>
+    <script>
+        function sleep(sleepTime = 1500) {
+            var start = new Date().getTime();
+            while (true) {
+                if (new Date().getTime() - start > sleepTime) {
+                    break;
+                }
+            }
+            //console.log('sleep done')
+        }
+        sleep(1000);
+    </script>
+    <link rel="icon" href="<%= BASE_URL %>favicon.ico">
+    <title>demo</title>
+</head>
+
+<body>
+    <script>
+        window.firstPaintEnd = Date.now()
+    </script>
+    <noscript>
+        <strong>We're sorry but demo doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
+    </noscript>
+    123123123
+    <div id="app"></div>
+    <!-- built files will be auto injected -->
+</body>
+
+</html>
