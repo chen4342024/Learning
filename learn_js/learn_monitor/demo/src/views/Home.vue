@@ -25,6 +25,16 @@
         <p>白屏时间(Chrome)： {{mesure.firstPaintTimeChrome}} ms</p>
         <p>dom渲染完成时间： {{mesure.domReady}} ms</p>
         <p>页面onload时间： {{mesure.onLoad}} ms</p>
+        <p>页面onLoadEnd时间： {{mesure.onLoadEnd}} ms</p>
+
+        <h3>用户设备</h3>
+        <p>dns解析时间： {{device.ua}} ms</p>
+        <img src="../assets/logo.png" alt>
+        <img
+            src="https://imgcdn.chuxingyouhui.com/lmjb/api/20181130/f0c1c851a1a14b0e859f10b939c79166.jpeg?x-oss-process=image/resize,h_380"
+            alt
+        >
+        <div class="test-logo"></div>
     </div>
 </template>
 
@@ -35,7 +45,8 @@ export default {
     data() {
         return {
             timing: {},
-            mesure: {}
+            mesure: {},
+            device: {}
         };
     },
 
@@ -44,11 +55,24 @@ export default {
             setTimeout(() => {
                 this.timing = performance.timing;
                 this.calc();
+                this.printAllEntry();
             }, 500);
         };
     },
 
     methods: {
+        setDevice() {
+            this.device.ua = window.navigator.userAgent;
+        },
+
+        printAllEntry() {
+            let entrys = window.performance.getEntries() || [];
+            entrys.forEach(entry => {
+                let time = this.getEntryTiming(entry);
+                console.log(JSON.stringify(time));
+            });
+        },
+
         calc() {
             this.mesure.dnsLookUp = this.dnsLookUp();
             this.mesure.tcpTime = this.tcpTime();
@@ -146,6 +170,7 @@ export default {
             return timing.domContentLoadedEventEnd - timing.navigationStart;
         },
 
+        //加载完成
         onLoad() {
             let timing = this.timing;
             return timing.loadEventStart - timing.navigationStart;
@@ -155,7 +180,50 @@ export default {
         onLoadEnd() {
             let timing = this.timing;
             return timing.loadEventEnd - timing.navigationStart;
+        },
+
+        getEntryTiming(entry) {
+            let times = {};
+            // 重定向的时间
+            times.redirect = entry.redirectEnd - entry.redirectStart;
+
+            // DNS 查询时间
+            times.domainLookup =
+                entry.domainLookupEnd - entry.domainLookupStart;
+
+            // TCP 建立连接完成握手的时间
+            times.connect = entry.connectEnd - entry.connectStart;
+
+            // 首字节时间
+            times.ttfb = entry.responseStart - entry.requestStart;
+
+            // 内容加载完成时间
+            times.request = entry.responseEnd - entry.requestStart;
+
+            times.name = entry.name;
+
+            // 类型
+            times.entryType = entry.entryType;
+
+            // 资源总耗时
+            // 包括等待时长，请求时长，响应时长
+            times.duration = entry.duration;
+
+            // 资源类型
+            // 注意，如果图片是在css里面的，则这个值会是css
+            times.initiatorType = entry.initiatorType;
+
+            return times;
         }
     }
 };
 </script>
+
+
+<style lang="scss" scoped >
+.test-logo {
+    background: url("../assets/logo2.jpeg") no-repeat center;
+    width: 300px;
+    height: 300px;
+}
+</style>
