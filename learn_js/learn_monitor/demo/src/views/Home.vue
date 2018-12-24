@@ -28,17 +28,23 @@
         <p>页面onLoadEnd时间： {{mesure.onLoadEnd}} ms</p>
 
         <h3>用户设备</h3>
-        <p>dns解析时间： {{device.ua}} ms</p>
-        <img src="../assets/logo.png" alt>
-        <img
-            src="https://imgcdn.chuxingyouhui.com/lmjb/api/20181130/f0c1c851a1a14b0e859f10b939c79166.jpeg?x-oss-process=image/resize,h_380"
-            alt
-        >
-        <div class="test-logo"></div>
+        <p>ua : {{device.ua}}</p>
+        <h3>超时资源</h3>
+        <button @click="testGet">请求链接</button>
+        <button @click="testAjaxGet">请求Ajax链接</button>
+        <p>{{timeOutEntrys}}</p>
+        <p>{{observeEntrys}}</p>
     </div>
 </template>
 
 <script>
+import axios from "axios";
+
+const service = axios.create({
+    baseURL: "http://fuhua-api-test.chuxingyouhui.com/api/", // api 的 base_url
+    timeout: 5000 // 请求超时时间
+});
+
 export default {
     name: "home",
     components: {},
@@ -46,7 +52,9 @@ export default {
         return {
             timing: {},
             mesure: {},
-            device: {}
+            device: {},
+            timeOutEntrys: [],
+            observeEntrys: []
         };
     },
 
@@ -58,18 +66,57 @@ export default {
                 this.printAllEntry();
             }, 500);
         };
+        this.setDevice();
+        this.observeEntry();
     },
 
     methods: {
+        testGet() {
+            let img = new Image();
+            img.src =
+                "https://imgcdn.chuxingyouhui.com/lmjb/api/20181130/f0c1c851a1a14b0e859f10b939c79166.jpeg?x-oss-process=image/resize,h_380" +
+                `&v=${new Date().getTime()}`;
+            return img;
+        },
+
+        testAjaxGet() {
+            service({
+                url: "/address/list",
+                method: "get",
+                params: {
+                    type: 0
+                }
+            });
+        },
+
         setDevice() {
             this.device.ua = window.navigator.userAgent;
         },
 
         printAllEntry() {
-            let entrys = window.performance.getEntries() || [];
+            let entrys = window.performance.getEntriesByType("resource") || [];
+            let timeOutEntrys = [];
             entrys.forEach(entry => {
-                let time = this.getEntryTiming(entry);
-                console.log(JSON.stringify(time));
+                if (entry.duration > 4 * 1000) {
+                    let time = this.getEntryTiming(entry);
+                    timeOutEntrys.push(time);
+                }
+            });
+            this.timeOutEntrys = timeOutEntrys;
+        },
+
+        observeEntry() {
+            // edge 不兼容
+            const observer = new PerformanceObserver(list => {
+                list.getEntries().forEach(entry => {
+                    // if (entry.duration > 10 * 1000) {
+                    let time = this.getEntryTiming(entry);
+                    this.observeEntrys.push(time);
+                    // }
+                });
+            });
+            observer.observe({
+                entryTypes: ["resource"]
             });
         },
 
@@ -106,6 +153,12 @@ export default {
         ttfb() {
             let timing = this.timing;
             return timing.responseStart - timing.requestStart;
+        },
+
+        //数据传输耗时
+        trans() {
+            let timing = this.timing;
+            return timing.responseEnd - timing.responseStart;
         },
 
         // First Paint Time, 首次渲染时间 / 白屏时间
@@ -149,12 +202,6 @@ export default {
             return 0;
         },
 
-        //数据传输耗时
-        trans() {
-            let timing = this.timing;
-            return timing.responseEnd - timing.responseStart;
-        },
-
         // Time to Interact，首次可交互时间
         // 浏览器完成所有HTML 解析并且完成DOM 构建，此时浏览器开始加载资源
         timeToInteract() {
@@ -188,17 +235,16 @@ export default {
             times.redirect = entry.redirectEnd - entry.redirectStart;
 
             // DNS 查询时间
-            times.domainLookup =
-                entry.domainLookupEnd - entry.domainLookupStart;
+            times.dnsLookUp = entry.domainLookupEnd - entry.domainLookupStart;
 
             // TCP 建立连接完成握手的时间
-            times.connect = entry.connectEnd - entry.connectStart;
+            times.tcpTime = entry.connectEnd - entry.connectStart;
 
             // 首字节时间
             times.ttfb = entry.responseStart - entry.requestStart;
 
             // 内容加载完成时间
-            times.request = entry.responseEnd - entry.requestStart;
+            times.trans = entry.responseEnd - entry.responseStart;
 
             times.name = entry.name;
 
@@ -212,6 +258,8 @@ export default {
             // 资源类型
             // 注意，如果图片是在css里面的，则这个值会是css
             times.initiatorType = entry.initiatorType;
+            times.encodedBodySize = entry.encodedBodySize;
+            times.decodedBodySize = entry.decodedBodySize;
 
             return times;
         }

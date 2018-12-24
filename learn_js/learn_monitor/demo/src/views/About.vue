@@ -1,5 +1,34 @@
 <template>
-  <div class="about">
-    <h1>This is an about page</h1>
-  </div>
+    <div class="about"></div>
 </template>
+
+<script>
+export default {
+    name: "home",
+    components: {},
+    data() {
+        return {
+            timing: {},
+            mesure: {},
+            device: {}
+        };
+    },
+
+    mounted() {
+        window.onload = () => {
+            setTimeout(() => {
+                this.timing = performance.timing;
+                this.calc();
+                this.printAllEntry();
+            }, 500);
+        };
+        this.setDevice();
+    },
+
+    methods: {
+        setDevice() {
+            this.device.ua = window.navigator.userAgent;
+        }
+    }
+};
+</script>
