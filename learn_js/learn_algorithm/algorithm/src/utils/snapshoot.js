@@ -13,7 +13,9 @@ export default class Snapshoot {
             list: [...(item.list || [])],
             swapIndexs: [...(item.swap || [])],
             emptyIndexs: [...(item.empty || [])],
-            temp: [...(item.temp || [])]
+            temp: [...(item.temp || [])],
+            compareRangeLeft: [...(item.compareRangeLeft || [])],
+            compareRangeRight: [...(item.compareRangeRight || [])]
         };
         this.list.push(cloneItem);
     }

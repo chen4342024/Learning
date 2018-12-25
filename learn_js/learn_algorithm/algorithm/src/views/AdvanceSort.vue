@@ -6,15 +6,18 @@
                 <span
                     v-for="(item,index) in testArray"
                     :key="item"
-                    :class="`list-complete-item ${isActive(index) ? 'active' : ''} ${ isEmpty(index) ? 'empty' : ''}`"
+                    :class="`list-complete-item ${isActive(index) ? 'active' : ''} ${ isEmpty(index) ? 'empty' : ''} ${ getCompareClass(index)}`"
                     :style="{ height: item + 20 + 'px'}"
                 >{{ item }}</span>
             </transition-group>
         </div>
         <div class="result-container">
+            {{compareRangeLeft}} {{compareRangeRight}}
             <div v-if="measureTime">
                 <p>排序时间 :</p>
                 <p>希尔 ：{{spendTime[0]}}</p>
+                <p>归并 ：{{spendTime[1]}}</p>
+                <p>快速 ：{{spendTime[2]}}</p>
             </div>
             <div v-else>
                 <p>排序前：{{beforeSort}}</p>
@@ -23,12 +26,15 @@
         </div>
         <div class="btn-container">
             <span class="cat-btn ghost medium" v-if="isShow('shell')" @click="handleCallSort(0)">希尔排序</span>
+            <span class="cat-btn ghost medium" v-if="isShow('merge')" @click="handleCallSort(1)">归并排序</span>
+            <span class="cat-btn ghost medium" v-if="isShow('quick')" @click="handleCallSort(2)">快速排序</span>
+            <span class="cat-btn ghost medium" v-if="isShow('all')" @click="handleTestingTime(2)">测量排序时间</span>
         </div>
     </div>
 </template>
 
 <script>
-import { makeData, swap, log, toString } from "../utils/util.js";
+import { makeData, swap, log, toString, mergeArrays } from "../utils/util.js";
 import Snapshoot from "../utils/snapshoot.js";
 export default {
     name: "home",
@@ -39,7 +45,9 @@ export default {
             beforeSort: "",
             afterSort: "",
             measureTime: false,
-            spendTime: []
+            spendTime: [],
+            compareRangeLeft: [],
+            compareRangeRight: []
         };
     },
 
@@ -65,13 +73,15 @@ export default {
                 this.testArray = item.list;
                 this.swapIndexs = item.swapIndexs;
                 this.emptyIndexs = item.emptyIndexs;
+                this.compareRangeLeft = item.compareRangeLeft;
+                this.compareRangeRight = item.compareRangeRight;
             });
         },
 
         handleTestingTime() {
             this.measureTime = true;
             this.snapshoot = new Snapshoot();
-            let testArray = makeData(500, 10000);
+            let testArray = makeData(1000, 10000);
             this.spendTime = [];
             for (let i = 0; i < 3; i++) {
                 let cloneTestArray = [...testArray];
@@ -89,6 +99,12 @@ export default {
                 case 0:
                     this.shellSort(testArray);
                     break;
+                case 1:
+                    this.mergeSort(testArray);
+                    break;
+                case 2:
+                    this.quickSort(testArray);
+                    break;
             }
         },
 
@@ -100,8 +116,24 @@ export default {
             return this.emptyIndexs.indexOf(index) != -1;
         },
 
-        // 冒泡排序，最慢的排序算法之一，
-        // 最大的值一步一步往上冒泡
+        getCompareClass(index) {
+            let compareRangeLeft = this.compareRangeLeft[0];
+            let compareRangeLeftEnd = this.compareRangeLeft[1];
+            let compareRangeRight = this.compareRangeRight[0];
+            let compareRangeRightEnd = this.compareRangeRight[1];
+            if (index >= compareRangeLeft && index < compareRangeLeftEnd) {
+                return "compare-left";
+            } else if (
+                index >= compareRangeRight &&
+                index < compareRangeRightEnd
+            ) {
+                return "compare-right";
+            } else {
+                return "";
+            }
+        },
+
+        // 希尔排序
         shellSort(array) {
             let gaps = [5, 3, 1];
             for (let i = 0; i < gaps.length; i++) {
@@ -139,7 +171,71 @@ export default {
             });
         },
 
-        mergeSort() {},
+        // 归并排序
+        mergeSort(array) {
+            if (array.length < 2) {
+                return;
+            }
+            let step = 1;
+            let left, right;
+            while (step < array.length) {
+                left = 0;
+                right = step;
+                while (right + step <= array.length) {
+                    mergeArrays(array, left, left + step, right, right + step);
+                    this.snapshoot.add({
+                        list: array,
+                        swap: [],
+                        compareRangeLeft: [left, left + step],
+                        compareRangeRight: [right, right + step]
+                    });
+                    left = right + step;
+                    right = left + step;
+                }
+
+                if (right < array.length) {
+                    mergeArrays(array, left, left + step, right, array.length);
+                    this.snapshoot.add({
+                        list: array,
+                        swap: [left, left + step, right, right + step],
+                        compareRangeLeft: [left, left + step],
+                        compareRangeRight: [right, right + step]
+                    });
+                }
+                step *= 2;
+            }
+            this.snapshoot.add({
+                list: array,
+                swap: []
+            });
+        },
+
+        // 快速排序
+        quickSort(array) {
+            if (array.length === 0) {
+                return [];
+            }
+            let lesser = [];
+            let greater = [];
+            let pivot = array[0];
+            for (let i = 1; i < array.length; i++) {
+                if (array[i] < pivot) {
+                    lesser.push(array[i]);
+                } else {
+                    greater.push(array[i]);
+                }
+            }
+            this.quickSort(lesser);
+            this.quickSort(greater);
+            let result = [...lesser, pivot, ...greater];
+            for (let j = 0; j < result.length; j++) {
+                array[j] = result[j];
+            }
+            this.snapshoot.add({
+                list: array,
+                swap: []
+            });
+        },
 
         isShow(key) {
             return this.showKey === key || this.showKey === "all";
@@ -221,5 +317,12 @@ h3 {
 }
 .cat-btn {
     margin-top: 0.1rem;
+}
+
+.compare-left {
+    background: #ffb600;
+}
+.compare-right {
+    background: #008100;
 }
 </style>

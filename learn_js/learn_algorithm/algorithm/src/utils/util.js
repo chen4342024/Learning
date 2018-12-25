@@ -46,20 +46,19 @@ export function mergeArrays(array, leftStart, leftEnd, rightStart, rightEnd) {
     let i = leftStart;
     let j = rightStart;
 
-    while (i <= leftEnd && j <= rightEnd) {
+    while (i < leftEnd && j < rightEnd) {
         if (array[i] <= array[j]) {
             temp.push(array[i++]);
         } else {
             temp.push(array[j++]);
         }
-        console.log(temp);
     }
 
-    while (i <= leftEnd) {
+    while (i < leftEnd) {
         temp.push(array[i++]);
     }
 
-    while (j <= rightEnd) {
+    while (j < rightEnd) {
         temp.push(array[j++]);
     }
 
