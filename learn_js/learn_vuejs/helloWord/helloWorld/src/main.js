@@ -8,8 +8,15 @@ Vue.config.productionTip = false
 
 /* eslint-disable no-new */
 new Vue({
-  el: '#app',
-  router,
-  template: '<App/>',
-  components: { App }
+    el: '#app',
+    data: {
+        title: 'chen',
+        msg: '123123'
+    },
+    template: `
+    <div class="hello">
+        <h1 class="title">{{ title }}</h1>
+        <p v-if="msg" class="msg">{{ msg }}</p>
+    </div>`,
+
 })

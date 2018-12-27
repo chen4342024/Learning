@@ -25,6 +25,11 @@ export default new Router({
             name: 'Transition',
             component: () =>
                 import( /* webpackChunkName: "EditProfile" */ "../views/Transition.vue")
+        }, {
+            path: '/Home',
+            name: 'Home',
+            component: () =>
+                import( /* webpackChunkName: "EditProfile" */ "../views/Home.vue")
         }
     ]
 })
