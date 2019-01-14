@@ -11,12 +11,14 @@ new Vue({
     el: '#app',
     data: {
         title: 'chen',
-        msg: '123123'
+        msgList: ['1111', '2222', '3333'],
+        isMan: true
     },
     template: `
     <div class="hello">
         <h1 class="title">{{ title }}</h1>
-        <p v-if="msg" class="msg">{{ msg }}</p>
+        <p v-for="msg,index,list in msgList" :key="index" class="msg">{{ msg }}</p>
+        <span v-if='isMan'>男</span><span v-else>女</span>
     </div>`,
 
 })

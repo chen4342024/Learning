@@ -33,6 +33,7 @@
         <button @click="testGet">请求链接</button>
         <button @click="testAjaxGet">请求Ajax链接</button>
         <p>{{timeOutEntrys}}</p>
+        <h3>观察资源</h3>
         <p>{{observeEntrys}}</p>
     </div>
 </template>
