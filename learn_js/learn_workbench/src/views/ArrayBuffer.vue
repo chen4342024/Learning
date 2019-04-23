@@ -1,5 +1,5 @@
 <template>
     <div class="about">
-        <h1>This is an about page</h1>
+        <h3>This is an ArrayBuffer page</h3>
     </div>
 </template>

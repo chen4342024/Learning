@@ -2,7 +2,8 @@
     <div id="app">
         <div id="nav">
             <router-link to="/">Home</router-link>|
-            <router-link to="/about">About</router-link>
+            <router-link to="/arrayBuffer">ArrayBuffer</router-link>|
+            <router-link to="/largeDiv">largeDiv</router-link>
         </div>
         <router-view />
     </div>
@@ -25,5 +26,18 @@
             color: #42b983;
         }
     }
+}
+
+.btn {
+    border: 1px solid #42b983;
+    height: 40px;
+    line-height: 40px;
+    margin-bottom: 5px;
+}
+
+.result-box {
+    font-size: 14px;
+    color: #333;
+    padding: 5px 0;
 }
 </style>
