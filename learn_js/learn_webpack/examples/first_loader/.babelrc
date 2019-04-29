@@ -1,0 +1,9 @@
+{
+    "presets": [
+        ["env", {
+            "targets": { "node": "current" }
+        }],
+        // ["@babel/preset-env"],
+        // "@babel/preset-stage-3"
+    ],
+}
