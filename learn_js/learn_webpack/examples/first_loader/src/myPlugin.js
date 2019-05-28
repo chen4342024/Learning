@@ -8,7 +8,7 @@ HelloWorldPlugin.prototype.apply = function(compiler) {
     // 当在 webpack 环境中应用一个插件时，插件将收到此 compiler 对象的引用。可以使用它来访问 webpack 的主环境。
 
     // 设置回调来访问 compilation 对象：
-    compiler.plugin('compilation', function(compilation) {
+    compiler.hooks.compilation.tap('HelloWorldPlugin', function(compilation) {
         // 现在，设置回调来访问 compilation 中的步骤：
         console.log('compilation');
 
@@ -17,11 +17,14 @@ HelloWorldPlugin.prototype.apply = function(compiler) {
         });
     });
 
-    compiler.plugin('emit', function(compilation, callback) {
+    compiler.hooks.emit.tapAsync('HelloWorldPlugin', function(
+        compilation,
+        callback
+    ) {
         // 现在，设置回调来访问 compilation 中的步骤：
         console.log('emit');
         // 在生成文件中，创建一个头部字符串：
-        var filelist = 'In this build:\n\n';
+        var filelist = '本次编译产生了以下文件:\n\n';
 
         // 遍历所有编译过的资源文件，
         // 对于每个文件名称，都添加一行内容。
@@ -42,7 +45,7 @@ HelloWorldPlugin.prototype.apply = function(compiler) {
         callback();
     });
 
-    compiler.plugin('done', function() {
+    compiler.hooks.done.tap('HelloWorldPlugin', function() {
         console.log('Hello World! done');
     });
 };
