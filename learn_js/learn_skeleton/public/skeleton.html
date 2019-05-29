@@ -1,0 +1,68 @@
+<html lang="en"><head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width,initial-scale=1.0">
+        <link rel="icon" href="<%= BASE_URL %>favicon.ico">
+        <title>learn_skeleton</title>
+    <script>
+        // JavaScript Document
+        /**
+         * 设计稿：750px
+         * 设备像素比：2（以这个为基准）
+         * viewport：device-width
+         *
+         * 设计为750px
+         * 用rem为布局单位，将页面分为7.5份（即是7.5rem）
+         * rem = device-width / 7.5
+         *
+         */
+        var docEl = document.documentElement;
+        var designWidth = docEl.getAttribute('data-design-width') || 750;
+        var rem, width, preWidth, timer;
+        function setRem() {
+            // 判断<html />的宽度
+            width = docEl.getBoundingClientRect().width;
+            if (width === preWidth) return;
+            preWidth = width;
+
+            if (designWidth > 750) {
+                width = 750;
+            }
+
+            // 1rem = 1px
+            rem = width / designWidth;
+
+            // font-size必须大于12px，所以rem值必须大于12
+            rem *= 100;
+
+            docEl.style.fontSize = rem + 'px';
+        }
+
+        function changeRem() {
+            setRem();
+        }
+
+        window.addEventListener('resize', function() {
+            clearTimeout(timer);
+            timer = setTimeout(changeRem, 300);
+        });
+        window.addEventListener('orientationchange', function() {
+            clearTimeout(timer);
+            timer = setTimeout(changeRem, 300);
+        });
+        setRem();
+    </script></head>
+    
+
+    <body>
+        <noscript>
+            <strong
+                >We're sorry but learn_skeleton doesn't work properly without
+                JavaScript enabled. Please enable it to continue.</strong
+            >
+        </noscript>
+        <div id="app">
+            <style class="skeleton-remove-after-first-request">body{width:10rem;min-height:25rem;background-image:url(data:image/png;base64,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);background-repeat:no-repeat;background-size:100% auto;}</style><script class="skeleton-remove-after-first-request">window.addEventListener('load', function(){setTimeout(function(){var removes = Array.from(document.body.querySelectorAll('.skeleton-remove-after-first-request'));removes && removes.map(function(item){document.body.removeChild(item);})},3000);})</script>
+        </div>
+        <!-- built files will be auto injected -->
+</body></html>
