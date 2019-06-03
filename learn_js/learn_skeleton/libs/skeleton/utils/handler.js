@@ -370,8 +370,8 @@ var SkeletonUtil = (function(exports) {
 
     function setLocalStorage(storage = {}) {
         let keys = Object.keys(storage);
-        keys.forEach((key, value) => {
-            localStorage.setItem(key, value);
+        keys.forEach((key) => {
+            localStorage.setItem(key, storage[key]);
         });
     }
 

@@ -22,6 +22,7 @@ const getSkeleton = async function(config = {}) {
     let templatePath = config.templatePath || './index.html'; // 需要做骨骼图替换的文件路径，默认 ./index.html
     let viewport = config.viewport || '375x812'; // 设置设备参数，默认 375x812
     let storage = config.storage || {};
+    let placeholderString = config.placeholderString || '<!-- shell -->';
 
     if (!(pageName && pageUrl)) {
         console.log(`name 和 url 均不能为空！`);
@@ -39,17 +40,22 @@ const getSkeleton = async function(config = {}) {
         return false;
     }
 
+    outputPath = `${outputPath}/${pageName}`;
     // 骨架图输出
     const skeletonHtmlPath = outputPath
-        ? path.join(outputPath, './skeleton-' + pageName + '.html')
+        ? path.join(outputPath, `./skeleton.html`)
         : null;
     const skeletonBase64Path = outputPath
-        ? path.join(outputPath, './base64-' + pageName + '.txt')
+        ? path.join(outputPath, `./base64.txt`)
+        : null;
+
+    const skeletonInjectPath = outputPath
+        ? path.join(outputPath, `./inject.txt`)
         : null;
 
     // 开始模拟打开页面
     co(function*() {
-        const browser = yield puppeteer.launch();
+        const browser = yield puppeteer.launch({ headless: false });
 
         let scriptContent = yield util.genScriptContent();
 
@@ -69,6 +75,18 @@ const getSkeleton = async function(config = {}) {
         // 注入脚本
         yield page.addScriptTag({ content: scriptContent });
 
+        // 在页面执行脚本 localstorage， 注入登陆信息
+        yield page.evaluate(storage => {
+            console.log(SkeletonUtil);
+            return SkeletonUtil.setLocalStorage(storage);
+        }, storage);
+
+        // 再重新打开
+        yield page.goto(pageUrl);
+
+        // 注入脚本
+        yield page.addScriptTag({ content: scriptContent });
+
         // 延时 10s
         yield sleep(10000);
 
@@ -79,16 +97,11 @@ const getSkeleton = async function(config = {}) {
 
         // Get the "viewport" of the page, as reported by the page.
         // 在页面执行脚本
-        const htmlAndStyle = yield page.evaluate(
-            (storage) => {
-                console.log(SkeletonUtil);
-                SkeletonUtil.setLocalStorage(storage);
-                return SkeletonUtil.getHtmlAndStyle();
-            },
-            {
-                storage: storage
-            }
-        );
+        const htmlAndStyle = yield page.evaluate(storage => {
+            console.log(SkeletonUtil);
+            SkeletonUtil.setLocalStorage(storage);
+            return SkeletonUtil.getHtmlAndStyle();
+        }, storage);
 
         // 执行截屏
         yield page.screenshot({
@@ -167,7 +180,7 @@ const getSkeleton = async function(config = {}) {
                     throw err;
                 }
                 console.log(
-                    `The base64-${pageName}.txt file has been saved in path '${outputPath}' !`
+                    `The ${pageName}/ base64.txt file has been saved in path '${outputPath}' !`
                 );
             });
         }
@@ -179,17 +192,30 @@ const getSkeleton = async function(config = {}) {
                     throw err;
                 }
                 console.log(
-                    `The skeleton-${pageName}.html file has been saved in path '${outputPath}' !`
+                    `The ${pageName} / skeleton.html file has been saved in path '${outputPath}' !`
+                );
+            });
+        }
+
+        // 需要注入到页面的代码
+        if (skeletonInjectPath) {
+            let injectString = getInjectString(skeletonImageBase64);
+            fs.writeFile(skeletonInjectPath, injectString, err => {
+                if (err) {
+                    throw err;
+                }
+                console.log(
+                    `The ${pageName} / inject.txt file has been saved in path '${outputPath}' !`
                 );
             });
         }
 
         // resetSkeletonBodyBg(templatePath, skeletonImageBase64);
-        replaceStringInFile(
-            templatePath,
-            `<!-- shell -->`,
-            getInjectString(skeletonImageBase64)
-        );
+        // replaceStringInFile(
+        //     templatePath,
+        //     placeholderString,
+        //     getInjectString(skeletonImageBase64)
+        // );
 
         yield browser.close();
     });
