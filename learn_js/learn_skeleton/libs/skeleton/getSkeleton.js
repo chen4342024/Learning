@@ -13,8 +13,6 @@ const imagemin = require('imagemin');
 const imageminPngquant = require('imagemin-pngquant');
 const util = require('./utils/index');
 
-const SCREEN_SHOT_PATH = 'screenshot';
-
 const getSkeleton = async function(config = {}) {
     const pageName = config.name; // 页面名称（仅限英文），必填
     const pageUrl = config.url; // 页面地址（此地址必须可访问），必填
@@ -41,6 +39,18 @@ const getSkeleton = async function(config = {}) {
     }
 
     outputPath = `${outputPath}/${pageName}`;
+    let SCREEN_SHOT_PATH = path.join(outputPath, 'screenshot');
+
+    // 若不存在 output 目录，创建目录
+    if (outputPath && !fs.existsSync(outputPath)) {
+        fs.mkdirSync(outputPath, 0755);
+    }
+
+    // 若不存在 output 目录，创建目录
+    if (SCREEN_SHOT_PATH && !fs.existsSync(SCREEN_SHOT_PATH)) {
+        fs.mkdirSync(SCREEN_SHOT_PATH, 0755);
+    }
+
     // 骨架图输出
     const skeletonHtmlPath = outputPath
         ? path.join(outputPath, `./skeleton.html`)
@@ -167,11 +177,6 @@ const getSkeleton = async function(config = {}) {
                 fs.unlinkSync(screenshotPath);
             }
         });
-
-        // 若不存在 output 目录，创建目录
-        if (outputPath && !fs.existsSync(outputPath)) {
-            fs.mkdirSync(outputPath, 0755);
-        }
 
         if (skeletonBase64Path) {
             // 将骨骼图 base64 png 写入 txt 文件
