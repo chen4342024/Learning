@@ -27,6 +27,12 @@ export default new Router({
             name: "largeDiv",
             component: () =>
                 import(/* webpackChunkName: "largeDiv" */ "./views/LargeDiv.vue")
+        },
+        {
+            path: "/serviceWorkerDemo",
+            name: "serviceWorker",
+            component: () =>
+                import(/* webpackChunkName: "service" */ "./views/ServiceWorker.vue")
         }
     ]
 });
