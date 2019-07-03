@@ -15,6 +15,7 @@ function matchAssets(requestUrl) {
     }
     return false;
 }
+// test
 
 this.addEventListener("install", function(event) {
     console.log("install");
