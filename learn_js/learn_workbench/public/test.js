@@ -1,1 +1,1 @@
-window.test = 123;
+window.test = 12;

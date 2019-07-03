@@ -2,6 +2,7 @@
     <div>
         serviceWorkerDemo
         {{ test }}
+        <img width="100%" src="../assets/test.jpg" />
     </div>
 </template>
 
