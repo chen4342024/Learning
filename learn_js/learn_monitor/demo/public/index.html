@@ -8,7 +8,8 @@
         <!-- <script>
         function _defineProperty(o,t,e){return t in o?Object.defineProperty(o,t,{value:e,enumerable:!0,configurable:!0,writable:!0}):o[t]=e,o}function _objectSpread(t){for(var o=1;o<arguments.length;o++){var e=null!=arguments[o]?arguments[o]:{},n=Object.keys(e);"function"==typeof Object.getOwnPropertySymbols&&(n=n.concat(Object.getOwnPropertySymbols(e).filter(function(o){return Object.getOwnPropertyDescriptor(e,o).enumerable}))),n.forEach(function(o){_defineProperty(t,o,e[o])})}return t}function createHttpRequest(){return window.ActiveXObject?new window.ActiveXObject("Microsoft.XMLHTTP"):window.XMLHttpRequest?new window.XMLHttpRequest:void 0}function AliLogTracker(o,t,e){this.uri_="http://"+t+"."+o+"/logstores/"+e+"/track?APIVersion=0.6.0",this.params_=[],this.httpRequest_=createHttpRequest()}function isObject(o){return"[object Object]"===Object.prototype.toString.call(o)}var baseConfig={host:"cn-shenzhen.log.aliyuncs.com",project:"zzcnext",performanceLogstore:"monitor_front",errorLogstore:"monitor_front_error_log",events:["load","error"]},defaultConfig=_objectSpread({},baseConfig,{projectName:"",isDebug:!(AliLogTracker.prototype={push:function(o,t){o&&t&&(this.params_.push(o),this.params_.push(t))},logger:function(){for(var t=this.uri_,o=0;0<this.params_.length;)t+=o%2==0?"&"+encodeURIComponent(this.params_.shift()):"="+encodeURIComponent(this.params_.shift()),++o;try{this.httpRequest_.open("GET",t,!1),this.httpRequest_.send(null)}catch(o){window&&window.console&&"function"==typeof window.console.log&&(console.log("Failed to log to ali log service because of this exception:\n"+o),console.log("Failed log data:",t))}}})}),monitor={version:"1.0.0",config:_objectSpread({},defaultConfig),events:{},Logger:AliLogTracker,setConfig:function(o,t){if(isObject(o)){var e=o;for(var n in e)this.config[n]=e[n]}else this.config[o]=t;this.checkConfig()},checkConfig:function(){var o=this.config,t=o.isDebug,e=o.projectName;t&&console.log("不真实发送日志哦！，isDebug : ".concat(t)),e||console.log("请配置具体项目名 projectName")},reportData:function(o){var t=1<arguments.length&&void 0!==arguments[1]?arguments[1]:{};if(this.config.isDebug)console.log("logger发送数据："),console.log(t);else{for(var e in t)o.push(e,t[e]+"");o.logger()}},on:function(o,t){this.events[o]||(this.events[o]=[]),this.events[o].push(t)},off:function(o,t){var e=this.events[o],n=e.findIndex(function(o){return o===t});return!!e[n]&&!(e[n]=null)},emit:function(o){for(var t=arguments.length,e=new Array(1<t?t-1:0),n=1;n<t;n++)e[n-1]=arguments[n];var r=this.events[o];r&&r.forEach(function(o){"function"==typeof o&&o.apply(void 0,e)})}};baseConfig.events.length&&baseConfig.events.forEach(function(t){window.addEventListener(t,function(o){monitor.emit(t,o)})});var config=monitor.config,logger=new monitor.Logger("".concat(config.host),"".concat(config.project),"".concat(config.errorLogstore));function report(o){var t=_objectSpread({},{href:document.location.href,ua:window.navigator.userAgent,projectName:config.projectName},o);monitor.reportData(logger,t)}monitor.on("error",function(o){var t=o.error,e={level:"error",error:"js",msg:t.message,stack:t.stack};monitor.report(e)});var config$1=monitor.config,logger$1=new monitor.Logger("".concat(config$1.host),"".concat(config$1.project),"".concat(config$1.performanceLogstore));function collect(){var o={},t=performance.timing;return o.dnsLookUp=t.domainLookupEnd-t.domainLookupStart,o.tcpTime=t.connectEnd-t.connectStart,o.ttfb=t.responseStart-t.requestStart,o.firstPaintTime=t.domLoading-t.navigationStart,window.firstPaintEnd&&(o.firstPaintTimeBody=window.firstPaintEnd-t.navigationStart),o.trans=t.responseEnd-t.responseStart,o.timeToInteract=t.domInteractive-t.navigationStart,o.domReady=t.domContentLoadedEventEnd-t.navigationStart,o.onLoad=t.loadEventStart-t.navigationStart,o}function report$1(){var o=collect(),t=_objectSpread({},{href:document.location.href,ua:window.navigator.userAgent,projectName:config$1.projectName},o);monitor.reportData(logger$1,t)}monitor.on("load",function(){report$1()}),(window.monitor=monitor).report=report;
     </script> -->
-        <script src="http://172.16.222.214:8888/dist/monitor.js"></script>
+        <!-- <script src="http://172.16.222.214:8888/dist/monitor.js"></script> -->
+        <script src="//h5.chuxingyouhui.com/monitor_frontend/monitor-1.1.1.js"></script>
         <script>
             monitor.setConfig({
                 projectName: 'test',
@@ -49,7 +50,10 @@
                 //console.log('sleep done')
             }
             sleep(1000);
-            a;
+            console.log('bind onerror');
+            window.onerror = function(){
+                console.log('onerror');
+            }
         </script>
         <link rel="icon" href="<%= BASE_URL %>favicon.ico" />
         <title>demo</title>
@@ -67,5 +71,6 @@
         </noscript>
         <div id="app"></div>
         <!-- built files will be auto injected -->
+        <!-- <script src="../"></script> -->
     </body>
 </html>

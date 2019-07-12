@@ -60,15 +60,18 @@ export default {
     },
 
     mounted() {
-        window.onload = () => {
-            setTimeout(() => {
-                this.timing = performance.timing;
-                this.calc();
-                this.printAllEntry();
-            }, 500);
-        };
-        this.setDevice();
-        this.observeEntry();
+        // window.onload = () => {
+        //     setTimeout(() => {
+        //         this.timing = performance.timing;
+        //         this.calc();
+        //         this.printAllEntry();
+        //     }, 500);
+        // };
+        // this.setDevice();
+        // this.observeEntry();
+        setTimeout(() => {
+            console.log(b);
+        });
     },
 
     methods: {
