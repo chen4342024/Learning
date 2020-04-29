@@ -32,7 +32,7 @@
     "webpack-dev-server": "^2.4.1"
   },
   "dependencies": {
-    "jquery": "^3.2.1",
+    "jquery": "^3.5.0",
     "zepto": "^1.2.0"
   },
   "license": "ISC"
